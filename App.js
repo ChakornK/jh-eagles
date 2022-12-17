@@ -1,0 +1,323 @@
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import * as React from "react";
+import { StyleSheet, View, useColorScheme, ScrollView, Linking, Vibration } from "react-native";
+import { BottomNavigation, Text, Appbar, TouchableRipple, Button, Dialog, Portal, Provider, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable } from "react-native-paper";
+import { NavigationContainer, DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
+const Tab = createMaterialBottomTabNavigator();
+
+const Stack = createNativeStackNavigator();
+
+const { LightTheme, DarkTheme } = adaptNavigationTheme({
+	light: NavigationDefaultTheme,
+	dark: NavigationDarkTheme
+});
+
+const lightTheme = {
+	...MD3LightTheme,
+	...LightTheme,
+	colors: {
+		...MD3LightTheme.colors,
+		...LightTheme.colors
+	}
+};
+const darkTheme = {
+	...MD3DarkTheme,
+	...DarkTheme,
+	colors: {
+		...MD3DarkTheme.colors,
+		...DarkTheme.colors
+	}
+};
+
+const BellSchedule = () => {
+	const scheme = useColorScheme();
+	return (
+		<PaperProvider theme={scheme == "light" ? lightTheme : darkTheme}>
+			<View style={styles.main}>
+				<ExpoStatusBar style={scheme == "light" ? "dark" : "light"} />
+				<ScrollView contentContainerStyle={{ paddingHorizontal: 4 }}>
+					<Text variant="titleMedium">Regular (Mon, Wed, Thu, Fri)</Text>
+					<DataTable style={{ marginBottom: 50 }}>
+						<DataTable.Row>
+							<DataTable.Cell>Warning Bell</DataTable.Cell>
+							<DataTable.Cell>8:25 am</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>First Block</DataTable.Cell>
+							<DataTable.Cell>8:30 - 9:50am</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Second Block</DataTable.Cell>
+							<DataTable.Cell>9:55 - 11:20am</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Lunch Break</DataTable.Cell>
+							<DataTable.Cell>11:20 - 12:00pm</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Third Block</DataTable.Cell>
+							<DataTable.Cell>12:05 - 1:30pm</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Fourth Block</DataTable.Cell>
+							<DataTable.Cell>1:35 - 2:55pm</DataTable.Cell>
+						</DataTable.Row>
+					</DataTable>
+					<Text variant="titleMedium">Tuesday Late Start</Text>
+					<DataTable style={{ marginBottom: 50 }}>
+						<DataTable.Row>
+							<DataTable.Cell>Warning Bell</DataTable.Cell>
+							<DataTable.Cell>9:15 am</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>First Block</DataTable.Cell>
+							<DataTable.Cell>9:20 - 10:30am</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Second Block</DataTable.Cell>
+							<DataTable.Cell>10:35 - 11:45am</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Lunch Break</DataTable.Cell>
+							<DataTable.Cell>11:45 - 12:25pm</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Third Block</DataTable.Cell>
+							<DataTable.Cell>12:30 - 1:40pm</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Fourth Block</DataTable.Cell>
+							<DataTable.Cell>1:45 - 2:55pm</DataTable.Cell>
+						</DataTable.Row>
+					</DataTable>
+
+					<Text variant="titleMedium">Regular</Text>
+					<DataTable style={{ marginBottom: 50 }}>
+						<DataTable.Row>
+							<DataTable.Cell>Warning Bell</DataTable.Cell>
+							<DataTable.Cell>8:25 am</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>First Block</DataTable.Cell>
+							<DataTable.Cell>8:30 - 9:50am</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Second Block</DataTable.Cell>
+							<DataTable.Cell>9:55 - 11:20am</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Lunch Break</DataTable.Cell>
+							<DataTable.Cell>11:20 - 12:00pm</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Third Block</DataTable.Cell>
+							<DataTable.Cell>12:05 - 1:30pm</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Fourth Block</DataTable.Cell>
+							<DataTable.Cell>1:35 - 2:55pm</DataTable.Cell>
+						</DataTable.Row>
+					</DataTable>
+				</ScrollView>
+			</View>
+		</PaperProvider>
+	);
+};
+
+const HomeRoute = ({ navigation }) => {
+	const scheme = useColorScheme();
+	React.useEffect(() => {
+		const unsubscribe = navigation.addListener("tabPress", (e) => {
+			Vibration.vibrate(10);
+		});
+
+		return unsubscribe;
+	}, [navigation]);
+	return (
+		<View style={{ height: "100%" }}>
+			<Appbar.Header mode="small" elevated="true">
+				<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
+					Home
+				</Text>
+			</Appbar.Header>
+			<ScrollView style={styles.main}>
+				<Text variant="headlineSmall">Block rotation</Text>
+				<Surface style={styles.section} elevation={2}>
+					<Text variant="titleMedium">ABCD</Text>
+					<Text variant="titleMedium">Day 1</Text>
+				</Surface>
+				<Text variant="headlineSmall">Information</Text>
+				<Surface style={styles.info_section} elevation={2}>
+					<View>
+						<Text variant="titleMedium">Bell schedule</Text>
+					</View>
+					<Button
+						mode="contained"
+						onPress={() => {
+							Vibration.vibrate(5);
+							navigation.navigate("Bell Schedule");
+						}}
+					>
+						View
+					</Button>
+				</Surface>
+				<Surface style={styles.info_section} elevation={2}>
+					<View>
+						<Text variant="titleMedium">Website</Text>
+					</View>
+					<Button
+						mode="contained"
+						onPress={() => {
+							Vibration.vibrate(5);
+							Linking.openURL("https://www.surreyschools.ca/johnht");
+						}}
+					>
+						Visit
+					</Button>
+				</Surface>
+			</ScrollView>
+		</View>
+	);
+};
+
+const MessagesRoute = ({ navigation }) => {
+	const scheme = useColorScheme();
+	React.useEffect(() => {
+		const unsubscribe = navigation.addListener("tabPress", (e) => {
+			Vibration.vibrate(10);
+		});
+
+		return unsubscribe;
+	}, [navigation]);
+	return (
+		<Appbar.Header mode="small" elevated="true">
+			<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
+				Messages
+			</Text>
+		</Appbar.Header>
+	);
+};
+
+const CalendarRoute = ({ navigation }) => {
+	const scheme = useColorScheme();
+	var eventList = [];
+	var events;
+	React.useEffect(() => {
+		const unsubscribe = navigation.addListener("tabPress", (e) => {
+			Vibration.vibrate(10);
+		});
+		return unsubscribe;
+	}, [navigation]);
+	fetch("https://eagletime.fly.dev/calendar")
+		.then((response) => response.json())
+		.then((json) => (events = json))
+		.catch((error) => console.error(error))
+		.then((events) => {
+			eventList = events;
+		});
+	return (
+		<View style={{ height: "100%" }}>
+			<Appbar.Header mode="small" elevated="true">
+				<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
+					Calendar
+				</Text>
+			</Appbar.Header>
+			{eventList.map((event) => (
+				<Text>{event.name}</Text>
+			))}
+		</View>
+	);
+};
+
+const MainScreen = () => {
+	const scheme = useColorScheme();
+	return (
+		<PaperProvider theme={scheme == "light" ? lightTheme : darkTheme}>
+			<View>
+				<ExpoStatusBar style={scheme == "light" ? "dark" : "light"} />
+			</View>
+			<Tab.Navigator shifting={false}>
+				<Tab.Screen
+					name="Home"
+					component={HomeRoute}
+					options={{
+						tabBarIcon: ({ focused, color }) => (focused ? <MaterialCommunityIcons name="home" color={color} size={24} /> : <MaterialCommunityIcons name="home-outline" color={color} size={24} />)
+					}}
+					onPress={() => {
+						Vibration.vibrate(5);
+					}}
+				/>
+				<Tab.Screen
+					name="Messages"
+					component={MessagesRoute}
+					options={{
+						tabBarIcon: ({ focused, color }) => (focused ? <MaterialCommunityIcons name="bell" color={color} size={24} /> : <MaterialCommunityIcons name="bell-outline" color={color} size={24} />)
+					}}
+				/>
+				<Tab.Screen
+					name="Calendar"
+					component={CalendarRoute}
+					options={{
+						tabBarIcon: ({ focused, color }) => (focused ? <MaterialCommunityIcons name="calendar" color={color} size={24} /> : <MaterialCommunityIcons name="calendar-outline" color={color} size={24} />)
+					}}
+				/>
+			</Tab.Navigator>
+		</PaperProvider>
+	);
+};
+
+const TopNavBar = ({ navigation, route, options, back }) => {
+	const scheme = useColorScheme();
+	if (route.name != "Main") {
+		return (
+			<Appbar.Header mode="small" elevated="true" theme={scheme == "light" ? lightTheme : darkTheme}>
+				{back ? <Appbar.BackAction onPress={navigation.goBack} color={scheme == "light" ? lightTheme.colors.text : darkTheme.colors.text} /> : null}
+				<Text variant="headlineLarge" style={{ marginLeft: 25 }} theme={scheme == "light" ? lightTheme : darkTheme}>
+					{route.name}
+				</Text>
+			</Appbar.Header>
+		);
+	}
+};
+
+export default function App() {
+	const scheme = useColorScheme();
+	return (
+		<NavigationContainer theme={scheme == "light" ? lightTheme : darkTheme}>
+			<Stack.Navigator
+				screenOptions={{
+					header: (props) => <TopNavBar {...props} />
+				}}
+			>
+				<Stack.Screen name="Main" component={MainScreen} />
+				<Stack.Screen name="Bell Schedule" component={BellSchedule} />
+			</Stack.Navigator>
+		</NavigationContainer>
+	);
+}
+
+const styles = StyleSheet.create({
+	section: {
+		padding: 25,
+		borderRadius: 20,
+		marginTop: 10,
+		marginBottom: 25
+	},
+	info_section: {
+		padding: 25,
+		borderRadius: 20,
+		marginTop: 10,
+		marginBottom: 10,
+		flexDirection: "row",
+		flex: 1,
+		justifyContent: "space-between",
+		alignItems: "center"
+	},
+	main: {
+		padding: 25
+	}
+});
