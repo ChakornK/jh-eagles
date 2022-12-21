@@ -1,11 +1,20 @@
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import * as React from "react";
+import { Component } from "react";
 import { StyleSheet, View, useColorScheme, ScrollView, Linking, Vibration } from "react-native";
 import { BottomNavigation, Text, Appbar, TouchableRipple, Button, Dialog, Portal, Provider, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable } from "react-native-paper";
 import { NavigationContainer, DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import RenderHtml from "react-native-render-html";
+
+const source = {
+	html: `
+<p style='text-align:center;'>
+  Hello World!
+</p>`
+};
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -157,6 +166,7 @@ const HomeRoute = ({ navigation }) => {
 
 		return unsubscribe;
 	}, [navigation]);
+
 	return (
 		<View style={{ height: "100%" }}>
 			<Appbar.Header mode="small" elevated="true">
@@ -165,10 +175,11 @@ const HomeRoute = ({ navigation }) => {
 				</Text>
 			</Appbar.Header>
 			<ScrollView style={styles.main}>
-				<Text variant="headlineSmall">Block rotation</Text>
+				{/* <Text variant="headlineSmall">Block rotation</Text> */}
 				<Surface style={styles.section} elevation={2}>
 					<Text variant="titleMedium">ABCD</Text>
 					<Text variant="titleMedium">Day 1</Text>
+					<View style={styles.line}></View>
 				</Surface>
 				<Text variant="headlineSmall">Information</Text>
 				<Surface style={styles.info_section} elevation={2}>
@@ -207,6 +218,7 @@ const HomeRoute = ({ navigation }) => {
 const MessagesRoute = ({ navigation }) => {
 	const scheme = useColorScheme();
 	React.useEffect(() => {
+		Vibration.vibrate(10);
 		const unsubscribe = navigation.addListener("tabPress", (e) => {
 			Vibration.vibrate(10);
 		});
@@ -222,36 +234,81 @@ const MessagesRoute = ({ navigation }) => {
 	);
 };
 
-const CalendarRoute = ({ navigation }) => {
-	const scheme = useColorScheme();
-	var eventList = [];
-	var events;
-	React.useEffect(() => {
-		const unsubscribe = navigation.addListener("tabPress", (e) => {
-			Vibration.vibrate(10);
+// const CalendarRoute = ({ navigation }) => {
+// 	const scheme = useColorScheme();
+// 	var eventList = [];
+// 	var events;
+// 	React.useEffect(() => {
+// 		Vibration.vibrate(10);
+// 		const unsubscribe = navigation.addListener("tabPress", (e) => {
+// 			Vibration.vibrate(10);
+// 		});
+// 		return unsubscribe;
+// 	}, [navigation]);
+// 	fetch("https://eagletime.fly.dev/calendar")
+// 		.then((response) => response.json())
+// 		.then((json) => (events = json))
+// 		.catch((error) => console.error(error))
+// 		.then((events) => {
+// 			eventList = events;
+// 		});
+// 	return (
+// 		<View style={{ height: "100%" }}>
+// 			<Appbar.Header mode="small" elevated="true">
+// 				<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
+// 					Calendar
+// 				</Text>
+// 			</Appbar.Header>
+// 			{eventList.map((event) => (
+// 				<Text>{event.name}</Text>
+// 			))}
+// 		</View>
+// 	);
+// };
+
+class CalendarRoute extends Component {
+	constructor() {
+		super();
+		this.state = {
+			eventList: []
+		};
+		fetch("https://eagletime.fly.dev/calendar")
+			.then((response) => response.json())
+			.catch((error) => console.error(error))
+			.then((events) => {
+				this.setState({
+					eventList: events
+				});
+			});
+	}
+	render() {
+		let events = this.state.eventList.map((a, i) => {
+			return (
+				<Surface key={i} style={styles.info_section} elevation={2}>
+					<View>
+						<Text variant="titleLarge">{a.name}</Text>
+						{/* <Text variant="titleSmall">{a.description}</Text> */}
+						<RenderHtml
+							source={{
+								html: a.description
+							}}
+						/>
+					</View>
+				</Surface>
+			);
 		});
-		return unsubscribe;
-	}, [navigation]);
-	fetch("https://eagletime.fly.dev/calendar")
-		.then((response) => response.json())
-		.then((json) => (events = json))
-		.catch((error) => console.error(error))
-		.then((events) => {
-			eventList = events;
-		});
-	return (
-		<View style={{ height: "100%" }}>
-			<Appbar.Header mode="small" elevated="true">
-				<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
-					Calendar
-				</Text>
-			</Appbar.Header>
-			{eventList.map((event) => (
-				<Text>{event.name}</Text>
-			))}
-		</View>
-	);
-};
+		return (
+			<View style={{ height: "100%" }}>
+				<Appbar.Header mode="small" elevated="true">
+					<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
+						Calendar
+					</Text>
+				</Appbar.Header>
+				<ScrollView style={styles.main}>{events}</ScrollView>
+			</View>
+		);
+	}
+}
 
 const MainScreen = () => {
 	const scheme = useColorScheme();
@@ -339,5 +396,12 @@ const styles = StyleSheet.create({
 	},
 	main: {
 		padding: 25
+	},
+	line: {
+		borderBottomColor: "#888",
+		borderBottomWidth: StyleSheet.hairlineWidth,
+		alignSelf: "stretch",
+		width: "100%",
+		marginVertical: 25
 	}
 });
