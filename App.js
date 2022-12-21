@@ -37,10 +37,10 @@ const BellSchedule = () => {
 	const scheme = useColorScheme();
 	return (
 		<PaperProvider theme={scheme == "light" ? lightTheme : darkTheme}>
-			<View style={styles.main}>
+			<View>
 				<ExpoStatusBar style={scheme == "light" ? "dark" : "light"} />
-				<ScrollView contentContainerStyle={{ paddingHorizontal: 4 }}>
-					<Text variant="titleMedium">Regular (Mon, Wed, Thu, Fri)</Text>
+				<ScrollView style={styles.main} contentContainerStyle={{ paddingHorizontal: 4 }}>
+					<Text variant="titleLarge">Regular (Mon, Wed, Thu, Fri)</Text>
 					<DataTable style={{ marginBottom: 50 }}>
 						<DataTable.Row>
 							<DataTable.Cell>Warning Bell</DataTable.Cell>
@@ -67,7 +67,7 @@ const BellSchedule = () => {
 							<DataTable.Cell>1:35 - 2:55pm</DataTable.Cell>
 						</DataTable.Row>
 					</DataTable>
-					<Text variant="titleMedium">Tuesday Late Start</Text>
+					<Text variant="titleLarge">Tuesday Late Start</Text>
 					<DataTable style={{ marginBottom: 50 }}>
 						<DataTable.Row>
 							<DataTable.Cell>Warning Bell</DataTable.Cell>
@@ -95,7 +95,7 @@ const BellSchedule = () => {
 						</DataTable.Row>
 					</DataTable>
 
-					<Text variant="titleMedium">Regular</Text>
+					<Text variant="titleLarge">Early Dismissal</Text>
 					<DataTable style={{ marginBottom: 50 }}>
 						<DataTable.Row>
 							<DataTable.Cell>Warning Bell</DataTable.Cell>
@@ -103,23 +103,43 @@ const BellSchedule = () => {
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>First Block</DataTable.Cell>
-							<DataTable.Cell>8:30 - 9:50am</DataTable.Cell>
+							<DataTable.Cell>8:30 - 9:40am</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Second Block</DataTable.Cell>
-							<DataTable.Cell>9:55 - 11:20am</DataTable.Cell>
+							<DataTable.Cell>9:45 - 10:55am</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Lunch Break</DataTable.Cell>
-							<DataTable.Cell>11:20 - 12:00pm</DataTable.Cell>
+							<DataTable.Cell>10:55 - 11:35pm</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Third Block</DataTable.Cell>
-							<DataTable.Cell>12:05 - 1:30pm</DataTable.Cell>
+							<DataTable.Cell>11:40 - 12:50pm</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Fourth Block</DataTable.Cell>
-							<DataTable.Cell>1:35 - 2:55pm</DataTable.Cell>
+							<DataTable.Cell>12:55 - 2:05pm</DataTable.Cell>
+						</DataTable.Row>
+					</DataTable>
+
+					<Text variant="titleLarge">Block Rotation</Text>
+					<DataTable style={{ marginBottom: 50 }}>
+						<DataTable.Row>
+							<DataTable.Cell>Week 1 & 2</DataTable.Cell>
+							<DataTable.Cell>ABCD/EFGH</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Week 3 & 4</DataTable.Cell>
+							<DataTable.Cell>CDAB/GHEF</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Week 5 & 6</DataTable.Cell>
+							<DataTable.Cell>BADC/FEHG</DataTable.Cell>
+						</DataTable.Row>
+						<DataTable.Row>
+							<DataTable.Cell>Week 7 & 8</DataTable.Cell>
+							<DataTable.Cell>DCBA/HGFE</DataTable.Cell>
 						</DataTable.Row>
 					</DataTable>
 				</ScrollView>
