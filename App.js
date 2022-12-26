@@ -2,19 +2,15 @@ import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import * as React from "react";
 import { Component } from "react";
 import { StyleSheet, View, useColorScheme, ScrollView, Linking, Vibration } from "react-native";
-import { BottomNavigation, Text, Appbar, TouchableRipple, Button, Dialog, Portal, Provider, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable } from "react-native-paper";
+import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable, ActivityIndicator } from "react-native-paper";
 import { NavigationContainer, DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import RenderHtml from "react-native-render-html";
+import HtmlText from "react-native-html-to-text";
 
-const source = {
-	html: `
-<p style='text-align:center;'>
-  Hello World!
-</p>`
-};
+const months = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."];
+const dayOfWeek = ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."];
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -159,13 +155,6 @@ const BellSchedule = () => {
 
 const HomeRoute = ({ navigation }) => {
 	const scheme = useColorScheme();
-	React.useEffect(() => {
-		const unsubscribe = navigation.addListener("tabPress", (e) => {
-			Vibration.vibrate(10);
-		});
-
-		return unsubscribe;
-	}, [navigation]);
 
 	return (
 		<View style={{ height: "100%" }}>
@@ -217,14 +206,6 @@ const HomeRoute = ({ navigation }) => {
 
 const MessagesRoute = ({ navigation }) => {
 	const scheme = useColorScheme();
-	React.useEffect(() => {
-		Vibration.vibrate(10);
-		const unsubscribe = navigation.addListener("tabPress", (e) => {
-			Vibration.vibrate(10);
-		});
-
-		return unsubscribe;
-	}, [navigation]);
 	return (
 		<Appbar.Header mode="small" elevated="true">
 			<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
@@ -233,38 +214,6 @@ const MessagesRoute = ({ navigation }) => {
 		</Appbar.Header>
 	);
 };
-
-// const CalendarRoute = ({ navigation }) => {
-// 	const scheme = useColorScheme();
-// 	var eventList = [];
-// 	var events;
-// 	React.useEffect(() => {
-// 		Vibration.vibrate(10);
-// 		const unsubscribe = navigation.addListener("tabPress", (e) => {
-// 			Vibration.vibrate(10);
-// 		});
-// 		return unsubscribe;
-// 	}, [navigation]);
-// 	fetch("https://eagletime.fly.dev/calendar")
-// 		.then((response) => response.json())
-// 		.then((json) => (events = json))
-// 		.catch((error) => console.error(error))
-// 		.then((events) => {
-// 			eventList = events;
-// 		});
-// 	return (
-// 		<View style={{ height: "100%" }}>
-// 			<Appbar.Header mode="small" elevated="true">
-// 				<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
-// 					Calendar
-// 				</Text>
-// 			</Appbar.Header>
-// 			{eventList.map((event) => (
-// 				<Text>{event.name}</Text>
-// 			))}
-// 		</View>
-// 	);
-// };
 
 class CalendarRoute extends Component {
 	constructor() {
@@ -282,20 +231,37 @@ class CalendarRoute extends Component {
 			});
 	}
 	render() {
+		var appendedDates = [];
 		let events = this.state.eventList.map((a, i) => {
-			return (
-				<Surface key={i} style={styles.info_section} elevation={2}>
+			if (!appendedDates.includes(a.date)) {
+				appendedDates.push(a.date);
+				let date = new Date(a.date);
+				let formattedDate = dayOfWeek[date.getDay()] + " " + months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+				return (
 					<View>
-						<Text variant="titleLarge">{a.name}</Text>
-						{/* <Text variant="titleSmall">{a.description}</Text> */}
-						<RenderHtml
-							source={{
-								html: a.description
-							}}
-						/>
+						<Text key={a.date} variant="titleMedium" style={{ marginTop: 20 }}>
+							{formattedDate}
+						</Text>
+						<Surface key={i} style={styles.info_section} elevation={2}>
+							<View>
+								<Text variant="titleLarge">{a.name}</Text>
+								<HtmlText style={{ color: "white" }} html={a.description}></HtmlText>
+							</View>
+						</Surface>
 					</View>
-				</Surface>
-			);
+				);
+			} else {
+				return (
+					<View>
+						<Surface key={i} style={styles.info_section} elevation={2}>
+							<View>
+								<Text variant="titleLarge">{a.name}</Text>
+								<HtmlText style={{ color: "white" }} html={a.description}></HtmlText>
+							</View>
+						</Surface>
+					</View>
+				);
+			}
 		});
 		return (
 			<View style={{ height: "100%" }}>
@@ -304,7 +270,10 @@ class CalendarRoute extends Component {
 						Calendar
 					</Text>
 				</Appbar.Header>
-				<ScrollView style={styles.main}>{events}</ScrollView>
+				<ScrollView style={styles.main}>
+					{events}
+					<ActivityIndicator animating={true} size={"small"} style={{ marginTop: 20 }} />
+				</ScrollView>
 			</View>
 		);
 	}
@@ -324,9 +293,11 @@ const MainScreen = () => {
 					options={{
 						tabBarIcon: ({ focused, color }) => (focused ? <MaterialCommunityIcons name="home" color={color} size={24} /> : <MaterialCommunityIcons name="home-outline" color={color} size={24} />)
 					}}
-					onPress={() => {
-						Vibration.vibrate(5);
-					}}
+					listeners={() => ({
+						tabPress: (e) => {
+							Vibration.vibrate(5);
+						}
+					})}
 				/>
 				<Tab.Screen
 					name="Messages"
@@ -334,6 +305,11 @@ const MainScreen = () => {
 					options={{
 						tabBarIcon: ({ focused, color }) => (focused ? <MaterialCommunityIcons name="bell" color={color} size={24} /> : <MaterialCommunityIcons name="bell-outline" color={color} size={24} />)
 					}}
+					listeners={() => ({
+						tabPress: (e) => {
+							Vibration.vibrate(5);
+						}
+					})}
 				/>
 				<Tab.Screen
 					name="Calendar"
@@ -341,6 +317,11 @@ const MainScreen = () => {
 					options={{
 						tabBarIcon: ({ focused, color }) => (focused ? <MaterialCommunityIcons name="calendar" color={color} size={24} /> : <MaterialCommunityIcons name="calendar-outline" color={color} size={24} />)
 					}}
+					listeners={() => ({
+						tabPress: (e) => {
+							Vibration.vibrate(5);
+						}
+					})}
 				/>
 			</Tab.Navigator>
 		</PaperProvider>
