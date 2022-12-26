@@ -2,7 +2,7 @@ import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import * as React from "react";
 import { Component } from "react";
 import { StyleSheet, View, useColorScheme, ScrollView, Linking, Vibration } from "react-native";
-import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable, ActivityIndicator } from "react-native-paper";
+import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable, ActivityIndicator, AnimatedFAB } from "react-native-paper";
 import { NavigationContainer, DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
@@ -219,7 +219,8 @@ class CalendarRoute extends Component {
 	constructor() {
 		super();
 		this.state = {
-			eventList: []
+			eventList: [],
+			fabExtended: true
 		};
 		fetch("https://eagletime.fly.dev/calendar")
 			.then((response) => response.json())
@@ -270,7 +271,31 @@ class CalendarRoute extends Component {
 						Calendar
 					</Text>
 				</Appbar.Header>
-				<ScrollView style={styles.main}>
+				<AnimatedFAB
+					icon={"calendar"}
+					label={"Calendar view"}
+					extended={this.state.fabExtended}
+					onPress={() => console.log("Pressed")}
+					visible={true}
+					animateFrom={"right"}
+					iconMode={"dynamic"}
+					style={{
+						bottom: 16,
+						right: 16,
+						position: "absolute",
+						zIndex: 9999
+					}}
+				/>
+				<ScrollView
+					style={styles.main}
+					onScroll={(e) => {
+						if (e.nativeEvent.contentOffset.y > 100) {
+							this.setState({ fabExtended: false });
+						} else {
+							this.setState({ fabExtended: true });
+						}
+					}}
+				>
 					{events}
 					<ActivityIndicator animating={true} size={"small"} style={{ marginTop: 20 }} />
 				</ScrollView>
