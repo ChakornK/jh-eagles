@@ -199,6 +199,105 @@ const HomeRoute = ({ navigation }) => {
 						Visit
 					</Button>
 				</Surface>
+				<Surface style={styles.info_section} elevation={2}>
+					<View>
+						<Text variant="titleMedium">MyEdBC</Text>
+					</View>
+					<Button
+						mode="contained"
+						onPress={() => {
+							Vibration.vibrate(5);
+							Linking.openURL("https://myeducation.gov.bc.ca/aspen/logon.do");
+						}}
+					>
+						Visit
+					</Button>
+				</Surface>
+				<Surface style={styles.info_section} elevation={2}>
+					<View>
+						<Text variant="titleMedium">School Cash Online</Text>
+					</View>
+					<Button
+						mode="contained"
+						onPress={() => {
+							Vibration.vibrate(5);
+							Linking.openURL("https://www.schoolcashonline.com/");
+						}}
+					>
+						Visit
+					</Button>
+				</Surface>
+				<Surface style={styles.info_section} elevation={2}>
+					<View>
+						<Text variant="titleMedium">Counsellor Appointments</Text>
+					</View>
+					<Button
+						mode="contained"
+						onPress={() => {
+							Vibration.vibrate(5);
+							Linking.openURL("https://jh.counsellorappointments.com/");
+						}}
+					>
+						Visit
+					</Button>
+				</Surface>
+				<Surface style={styles.info_section} elevation={2}>
+					<View>
+						<Text variant="titleMedium">Locker Assignments</Text>
+					</View>
+					<Button
+						mode="contained"
+						onPress={() => {
+							Vibration.vibrate(5);
+							Linking.openURL("https://jh.lockerassignment.com/");
+						}}
+					>
+						Visit
+					</Button>
+				</Surface>
+				<Surface style={styles.info_section} elevation={2}>
+					<View>
+						<Text variant="titleMedium">School Map</Text>
+					</View>
+					<Button
+						mode="contained"
+						onPress={() => {
+							Vibration.vibrate(5);
+							Linking.openURL("https://eagletime.appazur.com/media/info/eagletime/map_JH_2019_.jpg_CvI94vg.png");
+						}}
+					>
+						Visit
+					</Button>
+				</Surface>
+				<Surface style={styles.info_section} elevation={2}>
+					<View>
+						<Text variant="titleMedium">Phone</Text>
+					</View>
+					<Button
+						mode="contained"
+						onPress={() => {
+							Vibration.vibrate(5);
+							Linking.openURL("tel:+16045815500");
+						}}
+					>
+						Visit
+					</Button>
+				</Surface>
+				<Surface style={styles.info_section} elevation={2}>
+					<View>
+						<Text variant="titleMedium">Map and Directions</Text>
+					</View>
+					<Button
+						mode="contained"
+						onPress={() => {
+							Vibration.vibrate(5);
+							Linking.openURL("https://goo.gl/maps/K8cF7KdCun4r6RV89");
+						}}
+					>
+						Visit
+					</Button>
+				</Surface>
+				<View style={styles.main}></View>
 			</ScrollView>
 		</View>
 	);
@@ -239,8 +338,8 @@ class CalendarRoute extends Component {
 				let date = new Date(a.date);
 				let formattedDate = dayOfWeek[date.getDay()] + " " + months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
 				return (
-					<View>
-						<Text key={a.date} variant="titleMedium" style={{ marginTop: 20 }}>
+					<View key={a.date} style={styles.events}>
+						<Text variant="titleMedium" style={{ marginTop: 20 }}>
 							{formattedDate}
 						</Text>
 						<Surface key={i} style={styles.info_section} elevation={2}>
@@ -253,7 +352,7 @@ class CalendarRoute extends Component {
 				);
 			} else {
 				return (
-					<View>
+					<View style={styles.events}>
 						<Surface key={i} style={styles.info_section} elevation={2}>
 							<View>
 								<Text variant="titleLarge">{a.name}</Text>
@@ -287,7 +386,7 @@ class CalendarRoute extends Component {
 					}}
 				/>
 				<ScrollView
-					style={styles.main}
+					style={styles.scrollview}
 					onScroll={(e) => {
 						if (e.nativeEvent.contentOffset.y > 100) {
 							this.setState({ fabExtended: false });
@@ -409,5 +508,11 @@ const styles = StyleSheet.create({
 		alignSelf: "stretch",
 		width: "100%",
 		marginVertical: 25
+	},
+	events: {
+		paddingHorizontal: 25
+	},
+	scrollview: {
+		paddingVertical: 25
 	}
 });

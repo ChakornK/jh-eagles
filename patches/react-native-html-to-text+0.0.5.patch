@@ -1,0 +1,16 @@
+diff --git a/node_modules/react-native-html-to-text/lib/constants.js b/node_modules/react-native-html-to-text/lib/constants.js
+index 30ef905..652ae97 100644
+--- a/node_modules/react-native-html-to-text/lib/constants.js
++++ b/node_modules/react-native-html-to-text/lib/constants.js
+@@ -7,9 +7,9 @@ export const BLOCK_ELEMENTS = ["blockquote", "div", "h1", "h2", "h3", "h4", "h5"
+ export const INLINE_ELEMENTS = ["b", "i", "em", "strong", "a", "br", "q", "span", "sub", "sup", "u"]
+ export const DEFAULT_STYLES = StyleSheet.create({
+   a: {
+-    textDecorationLine: 'underline',
++    textDecorationLine: 'none',
+     textDecorationStyle: 'solid',
+-    color: "blue",
++    color: "#3e84ed",
+   },
+   b: {
+     fontWeight: 'bold'
