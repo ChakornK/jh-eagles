@@ -1,7 +1,7 @@
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import * as React from "react";
 import { Component } from "react";
-import { AppRegistry, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme } from "react-native";
+import { AppRegistry, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme, Appearance } from "react-native";
 import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog } from "react-native-paper";
 import { NavigationContainer, DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -300,7 +300,8 @@ class CalendarRoute extends Component {
 		this.state = {
 			eventList: [],
 			fabExtended: true,
-			calendarVisible: false
+			calendarVisible: false,
+			lastRefresh: Date(Date.now()).toString()
 		};
 		fetch("https://eagletime.fly.dev/calendar")
 			.then((response) => response.json())
@@ -310,8 +311,15 @@ class CalendarRoute extends Component {
 					eventList: events
 				});
 			});
+		this.refreshScreen = this.refreshScreen.bind(this);
+	}
+	refreshScreen() {
+		this.setState({ lastRefresh: Date(Date.now()).toString() });
 	}
 	render() {
+		Appearance.addChangeListener(() => {
+			this.refreshScreen();
+		});
 		var appendedDates = [];
 		let events = this.state.eventList.map((a, i) => {
 			if (!appendedDates.includes(a.date)) {
@@ -326,7 +334,7 @@ class CalendarRoute extends Component {
 						<Surface key={i} style={styles.info_section} elevation={2}>
 							<View>
 								<Text variant="titleLarge">{a.name}</Text>
-								<HtmlText style={{ color: "white" }} html={a.description}></HtmlText>
+								<HtmlText html={a.description}></HtmlText>
 							</View>
 						</Surface>
 					</View>
