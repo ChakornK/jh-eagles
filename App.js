@@ -1,13 +1,14 @@
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import * as React from "react";
 import { Component } from "react";
-import { StyleSheet, View, useColorScheme, ScrollView, Linking, Vibration } from "react-native";
-import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable, ActivityIndicator, AnimatedFAB } from "react-native-paper";
+import { AppRegistry, StyleSheet, View, ScrollView, Linking, Vibration } from "react-native";
+import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog } from "react-native-paper";
 import { NavigationContainer, DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import HtmlText from "react-native-html-to-text";
+import DatePicker from "react-native-modern-datepicker";
 
 const months = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."];
 const dayOfWeek = ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."];
@@ -16,34 +17,34 @@ const Tab = createMaterialBottomTabNavigator();
 
 const Stack = createNativeStackNavigator();
 
-const { LightTheme, DarkTheme } = adaptNavigationTheme({
-	light: NavigationDefaultTheme,
-	dark: NavigationDarkTheme
-});
+// const { LightTheme, DarkTheme } = adaptNavigationTheme({
+// 	light: NavigationDefaultTheme,
+// 	dark: NavigationDarkTheme
+// });
 
 const lightTheme = {
 	...MD3LightTheme,
-	...LightTheme,
+	// ...NavigationDefaultTheme,
 	colors: {
-		...MD3LightTheme.colors,
-		...LightTheme.colors
+		...MD3LightTheme.colors
+		// ...NavigationDefaultTheme.colors
 	}
 };
 const darkTheme = {
 	...MD3DarkTheme,
-	...DarkTheme,
+	// ...NavigationDarkTheme,
 	colors: {
-		...MD3DarkTheme.colors,
-		...DarkTheme.colors
+		...MD3DarkTheme.colors
+		// ...NavigationDarkTheme.colors
 	}
 };
 
 const BellSchedule = () => {
-	const scheme = useColorScheme();
+	// const scheme = useColorScheme();
 	return (
-		<PaperProvider theme={scheme == "light" ? lightTheme : darkTheme}>
+		<PaperProvider theme={darkTheme}>
 			<View>
-				<ExpoStatusBar style={scheme == "light" ? "dark" : "light"} />
+				<ExpoStatusBar style={"light"} />
 				<ScrollView style={styles.main} contentContainerStyle={{ paddingHorizontal: 4 }}>
 					<Text variant="titleLarge">Regular (Mon, Wed, Thu, Fri)</Text>
 					<DataTable style={{ marginBottom: 50 }}>
@@ -154,7 +155,7 @@ const BellSchedule = () => {
 };
 
 const HomeRoute = ({ navigation }) => {
-	const scheme = useColorScheme();
+	// const scheme = useColorScheme();
 
 	return (
 		<View style={{ height: "100%" }}>
@@ -304,7 +305,7 @@ const HomeRoute = ({ navigation }) => {
 };
 
 const MessagesRoute = ({ navigation }) => {
-	const scheme = useColorScheme();
+	// const scheme = useColorScheme();
 	return (
 		<Appbar.Header mode="small" elevated="true">
 			<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
@@ -319,7 +320,8 @@ class CalendarRoute extends Component {
 		super();
 		this.state = {
 			eventList: [],
-			fabExtended: true
+			fabExtended: true,
+			calendarVisible: false
 		};
 		fetch("https://eagletime.fly.dev/calendar")
 			.then((response) => response.json())
@@ -363,6 +365,7 @@ class CalendarRoute extends Component {
 				);
 			}
 		});
+
 		return (
 			<View style={{ height: "100%" }}>
 				<Appbar.Header mode="small" elevated="true">
@@ -370,11 +373,23 @@ class CalendarRoute extends Component {
 						Calendar
 					</Text>
 				</Appbar.Header>
+				<Portal>
+					<Dialog dismissable={true} visible={this.state.calendarVisible} onDismiss={() => this.setState({ calendarVisible: false })}>
+						<Dialog.Title>Pick a date</Dialog.Title>
+						<Dialog.Content>
+							<DatePicker mode="calendar" />
+						</Dialog.Content>
+						<Dialog.Actions>
+							<Button onPress={() => this.setState({ calendarVisible: false })}>Cancel</Button>
+							<Button onPress={() => this.setState({ calendarVisible: false })}>Ok</Button>
+						</Dialog.Actions>
+					</Dialog>
+				</Portal>
 				<AnimatedFAB
 					icon={"calendar"}
 					label={"Calendar view"}
 					extended={this.state.fabExtended}
-					onPress={() => console.log("Pressed")}
+					onPress={() => this.setState({ calendarVisible: true })}
 					visible={true}
 					animateFrom={"right"}
 					iconMode={"dynamic"}
@@ -404,11 +419,12 @@ class CalendarRoute extends Component {
 }
 
 const MainScreen = () => {
-	const scheme = useColorScheme();
+	// const scheme = useColorScheme();
 	return (
-		<PaperProvider theme={scheme == "light" ? lightTheme : darkTheme}>
+		// <PaperProvider theme={darkTheme}>
+		<PaperProvider theme={darkTheme}>
 			<View>
-				<ExpoStatusBar style={scheme == "light" ? "dark" : "light"} />
+				<ExpoStatusBar style={"light"} />
 			</View>
 			<Tab.Navigator shifting={false}>
 				<Tab.Screen
@@ -453,12 +469,12 @@ const MainScreen = () => {
 };
 
 const TopNavBar = ({ navigation, route, options, back }) => {
-	const scheme = useColorScheme();
+	// const scheme = useColorScheme();
 	if (route.name != "Main") {
 		return (
-			<Appbar.Header mode="small" elevated="true" theme={scheme == "light" ? lightTheme : darkTheme}>
-				{back ? <Appbar.BackAction onPress={navigation.goBack} color={scheme == "light" ? lightTheme.colors.text : darkTheme.colors.text} /> : null}
-				<Text variant="headlineLarge" style={{ marginLeft: 25 }} theme={scheme == "light" ? lightTheme : darkTheme}>
+			<Appbar.Header mode="small" elevated="true" theme={darkTheme}>
+				{back ? <Appbar.BackAction onPress={navigation.goBack} color={darkTheme.colors.text} /> : null}
+				<Text variant="headlineLarge" style={{ marginLeft: 25 }} theme={darkTheme}>
 					{route.name}
 				</Text>
 			</Appbar.Header>
@@ -467,9 +483,9 @@ const TopNavBar = ({ navigation, route, options, back }) => {
 };
 
 export default function App() {
-	const scheme = useColorScheme();
+	// const scheme = useColorScheme();
 	return (
-		<NavigationContainer theme={scheme == "light" ? lightTheme : darkTheme}>
+		<NavigationContainer theme={darkTheme}>
 			<Stack.Navigator
 				screenOptions={{
 					header: (props) => <TopNavBar {...props} />
