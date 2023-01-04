@@ -1,11 +1,12 @@
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import * as React from "react";
 import { Component } from "react";
-import { AppRegistry, StyleSheet, View, ScrollView, Linking, Vibration } from "react-native";
+import { AppRegistry, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme } from "react-native";
 import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog } from "react-native-paper";
 import { NavigationContainer, DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+// import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import { createMaterialBottomTabNavigator } from "@juliushuck/react-native-navigation-material-bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import HtmlText from "react-native-html-to-text";
 import DatePicker from "react-native-modern-datepicker";
@@ -17,32 +18,10 @@ const Tab = createMaterialBottomTabNavigator();
 
 const Stack = createNativeStackNavigator();
 
-// const { LightTheme, DarkTheme } = adaptNavigationTheme({
-// 	light: NavigationDefaultTheme,
-// 	dark: NavigationDarkTheme
-// });
-
-const lightTheme = {
-	...MD3LightTheme,
-	// ...NavigationDefaultTheme,
-	colors: {
-		...MD3LightTheme.colors
-		// ...NavigationDefaultTheme.colors
-	}
-};
-const darkTheme = {
-	...MD3DarkTheme,
-	// ...NavigationDarkTheme,
-	colors: {
-		...MD3DarkTheme.colors
-		// ...NavigationDarkTheme.colors
-	}
-};
-
 const BellSchedule = () => {
-	// const scheme = useColorScheme();
+	const scheme = useColorScheme();
 	return (
-		<PaperProvider theme={darkTheme}>
+		<PaperProvider theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
 			<View>
 				<ExpoStatusBar style={"light"} />
 				<ScrollView style={styles.main} contentContainerStyle={{ paddingHorizontal: 4 }}>
@@ -419,10 +398,9 @@ class CalendarRoute extends Component {
 }
 
 const MainScreen = () => {
-	// const scheme = useColorScheme();
+	const scheme = useColorScheme();
 	return (
-		// <PaperProvider theme={darkTheme}>
-		<PaperProvider theme={darkTheme}>
+		<PaperProvider theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
 			<View>
 				<ExpoStatusBar style={"light"} />
 			</View>
@@ -469,12 +447,12 @@ const MainScreen = () => {
 };
 
 const TopNavBar = ({ navigation, route, options, back }) => {
-	// const scheme = useColorScheme();
+	const scheme = useColorScheme();
 	if (route.name != "Main") {
 		return (
-			<Appbar.Header mode="small" elevated="true" theme={darkTheme}>
-				{back ? <Appbar.BackAction onPress={navigation.goBack} color={darkTheme.colors.text} /> : null}
-				<Text variant="headlineLarge" style={{ marginLeft: 25 }} theme={darkTheme}>
+			<Appbar.Header mode="small" elevated="true" theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
+				{back ? <Appbar.BackAction onPress={navigation.goBack} color={scheme == "light" ? MD3LightTheme.colors.text : MD3DarkTheme.colors.text} /> : null}
+				<Text variant="headlineLarge" style={{ marginLeft: 25 }} theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
 					{route.name}
 				</Text>
 			</Appbar.Header>
@@ -483,9 +461,9 @@ const TopNavBar = ({ navigation, route, options, back }) => {
 };
 
 export default function App() {
-	// const scheme = useColorScheme();
+	const scheme = useColorScheme();
 	return (
-		<NavigationContainer theme={darkTheme}>
+		<NavigationContainer theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
 			<Stack.Navigator
 				screenOptions={{
 					header: (props) => <TopNavBar {...props} />

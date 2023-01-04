@@ -12,6 +12,7 @@
 	},
 	"dependencies": {
 		"@assembless/react-native-material-you": "^1.0.0-beta.4",
+		"@juliushuck/react-native-navigation-material-bottom-tabs": "^10.0.0",
 		"@react-navigation/material-bottom-tabs": "^6.2.4",
 		"@react-navigation/native": "^6.0.13",
 		"@react-navigation/native-stack": "^6.9.1",
