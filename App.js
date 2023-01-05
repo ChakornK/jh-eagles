@@ -2,7 +2,7 @@ import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import * as React from "react";
 import { Component } from "react";
 import { AppRegistry, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme, Appearance } from "react-native";
-import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog } from "react-native-paper";
+import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog, Snackbar } from "react-native-paper";
 import { NavigationContainer, DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
@@ -18,12 +18,14 @@ const Tab = createMaterialBottomTabNavigator();
 
 const Stack = createNativeStackNavigator();
 
+// console.log(MD3DarkTheme);
+
 const BellSchedule = () => {
 	const scheme = useColorScheme();
 	return (
 		<PaperProvider theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
 			<View>
-				<ExpoStatusBar style={"light"} />
+				<ExpoStatusBar style={scheme == "light" ? "dark" : "light"} />
 				<ScrollView style={styles.main} contentContainerStyle={{ paddingHorizontal: 4 }}>
 					<Text variant="titleLarge">Regular (Mon, Wed, Thu, Fri)</Text>
 					<DataTable style={{ marginBottom: 50 }}>
@@ -301,16 +303,24 @@ class CalendarRoute extends Component {
 			eventList: [],
 			fabExtended: true,
 			calendarVisible: false,
-			lastRefresh: Date(Date.now()).toString()
+			lastRefresh: Date(Date.now()).toString(),
+			minDate: "",
+			maxDate: "",
+			selectedDate: "",
+			datePositions: {},
+			snackbarVisible: false
 		};
 		fetch("https://eagletime.fly.dev/calendar")
 			.then((response) => response.json())
 			.catch((error) => console.error(error))
 			.then((events) => {
 				this.setState({
-					eventList: events
+					eventList: events,
+					minDate: events[0].date,
+					maxDate: events[events.length - 1].date
 				});
 			});
+
 		this.refreshScreen = this.refreshScreen.bind(this);
 	}
 	refreshScreen() {
@@ -321,31 +331,87 @@ class CalendarRoute extends Component {
 			this.refreshScreen();
 		});
 		var appendedDates = [];
-		let events = this.state.eventList.map((a, i) => {
+
+		var events = this.state.eventList.map((a, i) => {
 			if (!appendedDates.includes(a.date)) {
 				appendedDates.push(a.date);
 				let date = new Date(a.date);
+				date.setUTCHours(16);
 				let formattedDate = dayOfWeek[date.getDay()] + " " + months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
-				return (
-					<View key={a.date} style={styles.events}>
-						<Text variant="titleMedium" style={{ marginTop: 20 }}>
-							{formattedDate}
-						</Text>
-						<Surface key={i} style={styles.info_section} elevation={2}>
-							<View>
-								<Text variant="titleLarge">{a.name}</Text>
-								<HtmlText html={a.description}></HtmlText>
-							</View>
-						</Surface>
-					</View>
-				);
+				if (a.cal_mode === 1) {
+					return (
+						<View
+							key={a.date}
+							style={styles.events}
+							onLayout={(event) => {
+								this.state.datePositions[a.date] = Math.floor(event.nativeEvent.layout.y);
+							}}
+						>
+							{appendedDates.length > 1 ? <View style={styles.line}></View> : null}
+
+							<Text variant="titleMedium" style={{ marginTop: 20 }}>
+								{formattedDate} — <Text variant="titleLarge">{a.name}</Text>
+							</Text>
+						</View>
+					);
+				} else {
+					return (
+						<View
+							key={i}
+							style={styles.events}
+							onLayout={(event) => {
+								if (!this.state.datePositions[a.date]) {
+									this.state.datePositions[a.date] = Math.floor(event.nativeEvent.layout.y);
+								}
+							}}
+						>
+							<Text variant="titleMedium" style={{ marginTop: 20 }}>
+								{formattedDate}
+							</Text>
+							<Surface style={styles.info_section} elevation={2}>
+								<View>
+									<Text style={styles.text_with_margin} variant="titleLarge">
+										{a.name}
+									</Text>
+									{a.start ? (
+										a.end ? (
+											<Text style={styles.text_with_margin} variant="titleMedium">
+												{a.start} - {a.end}
+											</Text>
+										) : (
+											<Text style={styles.text_with_margin} variant="titleMedium">
+												{a.start}
+											</Text>
+										)
+									) : (
+										<View style={styles.text_with_margin}></View>
+									)}
+									{a.description ? <HtmlText html={a.description}></HtmlText> : null}
+								</View>
+							</Surface>
+						</View>
+					);
+				}
 			} else {
 				return (
-					<View style={styles.events}>
-						<Surface key={i} style={styles.info_section} elevation={2}>
+					<View key={i} style={styles.events}>
+						<Surface style={styles.info_section} elevation={2}>
 							<View>
 								<Text variant="titleLarge">{a.name}</Text>
-								<HtmlText style={{ color: "white" }} html={a.description}></HtmlText>
+								{a.start ? (
+									a.end ? (
+										<Text style={styles.text_with_margin} variant="titleMedium">
+											{a.start} - {a.end}
+										</Text>
+									) : (
+										<Text style={styles.text_with_margin} variant="titleMedium">
+											{a.start}
+										</Text>
+									)
+								) : (
+									<View style={styles.text_with_margin}></View>
+								)}
+								{a.description ? <HtmlText html={a.description}></HtmlText> : null}
 							</View>
 						</Surface>
 					</View>
@@ -364,24 +430,86 @@ class CalendarRoute extends Component {
 					<Dialog dismissable={true} visible={this.state.calendarVisible} onDismiss={() => this.setState({ calendarVisible: false })}>
 						<Dialog.Title>Pick a date</Dialog.Title>
 						<Dialog.Content>
-							<DatePicker mode="calendar" />
+							<DatePicker
+								mode="calendar"
+								options={
+									Appearance.getColorScheme() == "light"
+										? {
+												backgroundColor: MD3LightTheme.colors.elevation.level3,
+												textHeaderColor: MD3LightTheme.colors.onSurface, // Month and year text
+												textDefaultColor: MD3LightTheme.colors.onSurface, // Day text
+												selectedTextColor: MD3LightTheme.colors.onPrimary, // Day text when selected
+												mainColor: MD3LightTheme.colors.primary, // accent color (arrows and selected bubble)
+												textSecondaryColor: MD3LightTheme.colors.onSurfaceDisabled, // days of week label
+												borderColor: "#00000000"
+										  }
+										: {
+												backgroundColor: MD3DarkTheme.colors.elevation.level3,
+												textHeaderColor: MD3DarkTheme.colors.onSurface, // Month and year text
+												textDefaultColor: MD3DarkTheme.colors.onSurface, // Day text
+												selectedTextColor: MD3DarkTheme.colors.onPrimary, // Day text when selected
+												mainColor: MD3DarkTheme.colors.primary, // accent color (arrows and selected bubble)
+												textSecondaryColor: MD3DarkTheme.colors.onSurfaceDisabled, // days of week label
+												borderColor: "#ffffff00"
+										  }
+								}
+								minimumDate={this.state.minDate}
+								maximumDate={this.state.maxDate}
+								onDateChange={(date) => {
+									this.setState({
+										selectedDate: date.replace(/\//g, "-")
+									});
+								}}
+							/>
 						</Dialog.Content>
 						<Dialog.Actions>
 							<Button onPress={() => this.setState({ calendarVisible: false })}>Cancel</Button>
-							<Button onPress={() => this.setState({ calendarVisible: false })}>Ok</Button>
+							<Button
+								onPress={() => {
+									this.setState({ calendarVisible: false });
+									if (this.state.datePositions[this.state.selectedDate]) {
+										this.scrollViewElement.scrollTo({ x: 0, y: this.state.datePositions[this.state.selectedDate], animated: true });
+									} else {
+										this.setState({ snackbarVisible: true });
+										setTimeout(() => {
+											this.setState({ snackbarVisible: false });
+										}, 2000);
+									}
+								}}
+							>
+								Ok
+							</Button>
 						</Dialog.Actions>
 					</Dialog>
 				</Portal>
+				<Snackbar
+					visible={this.state.snackbarVisible}
+					onDismiss={() => {
+						this.setState({ snackbarVisible: false });
+					}}
+					action={{
+						label: "Dismiss",
+						onPress: () => {
+							this.setState({ snackbarVisible: false });
+						}
+					}}
+					style={{
+						zIndex: 99999
+					}}
+					theme={MD3DarkTheme}
+				>
+					Selected date is not on the calendar.
+				</Snackbar>
 				<AnimatedFAB
 					icon={"calendar"}
 					label={"Calendar view"}
 					extended={this.state.fabExtended}
-					onPress={() => this.setState({ calendarVisible: true })}
+					onPress={() => this.setState({ calendarVisible: true, selectedDate: "" })}
 					visible={true}
 					animateFrom={"right"}
 					iconMode={"dynamic"}
 					style={{
-						bottom: 16,
+						bottom: this.state.snackbarVisible ? 64 : 16,
 						right: 16,
 						position: "absolute",
 						zIndex: 9999
@@ -396,6 +524,7 @@ class CalendarRoute extends Component {
 							this.setState({ fabExtended: true });
 						}
 					}}
+					ref={(ref) => (this.scrollViewElement = ref)}
 				>
 					{events}
 					<ActivityIndicator animating={true} size={"small"} style={{ marginTop: 20 }} />
@@ -410,7 +539,7 @@ const MainScreen = () => {
 	return (
 		<PaperProvider theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
 			<View>
-				<ExpoStatusBar style={"light"} />
+				<ExpoStatusBar style={scheme == "light" ? "dark" : "light"} />
 			</View>
 			<Tab.Navigator shifting={false}>
 				<Tab.Screen
@@ -516,5 +645,8 @@ const styles = StyleSheet.create({
 	},
 	scrollview: {
 		paddingVertical: 25
+	},
+	text_with_margin: {
+		marginBottom: 10
 	}
 });
