@@ -1,7 +1,6 @@
-import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import * as React from "react";
 import { Component } from "react";
-import { AppRegistry, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme, Appearance } from "react-native";
+import { StatusBar, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme, Appearance } from "react-native";
 import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog, Snackbar } from "react-native-paper";
 import { NavigationContainer, DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -25,7 +24,6 @@ const BellSchedule = () => {
 	return (
 		<PaperProvider theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
 			<View>
-				<ExpoStatusBar style={scheme == "light" ? "dark" : "light"} />
 				<ScrollView style={styles.main} contentContainerStyle={{ paddingHorizontal: 4 }}>
 					<Text variant="titleLarge">Regular (Mon, Wed, Thu, Fri)</Text>
 					<DataTable style={{ marginBottom: 50 }}>
@@ -538,9 +536,6 @@ const MainScreen = () => {
 	const scheme = useColorScheme();
 	return (
 		<PaperProvider theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
-			<View>
-				<ExpoStatusBar style={scheme == "light" ? "dark" : "light"} />
-			</View>
 			<Tab.Navigator shifting={false}>
 				<Tab.Screen
 					name="Home"
@@ -588,7 +583,7 @@ const TopNavBar = ({ navigation, route, options, back }) => {
 	if (route.name != "Main") {
 		return (
 			<Appbar.Header mode="small" elevated="true" theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
-				{back ? <Appbar.BackAction onPress={navigation.goBack} color={scheme == "light" ? MD3LightTheme.colors.text : MD3DarkTheme.colors.text} /> : null}
+				{back ? <Appbar.BackAction onPress={navigation.goBack} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} /> : null}
 				<Text variant="headlineLarge" style={{ marginLeft: 25 }} theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
 					{route.name}
 				</Text>
@@ -601,6 +596,7 @@ export default function App() {
 	const scheme = useColorScheme();
 	return (
 		<NavigationContainer theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
+			<StatusBar barStyle={scheme == "light" ? "dark-content" : "light-content"} backgroundColor="#00000000" translucent={true} />
 			<Stack.Navigator
 				screenOptions={{
 					header: (props) => <TopNavBar {...props} />

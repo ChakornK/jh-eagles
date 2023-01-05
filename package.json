@@ -8,7 +8,8 @@
 		"ios": "expo start --ios",
 		"web": "expo start --web",
 		"patch": "npx patch-package",
-		"build-apk": "eas build -p android --profile preview"
+		"build-apk": "eas build -p android --profile preview",
+		"reset": "git clean --force;git reset --hard"
 	},
 	"dependencies": {
 		"@assembless/react-native-material-you": "^1.0.0-beta.4",
@@ -17,7 +18,6 @@
 		"@react-navigation/native": "^6.0.13",
 		"@react-navigation/native-stack": "^6.9.1",
 		"expo": "~46.0.16",
-		"expo-status-bar": "~1.4.0",
 		"patch-package": "^6.5.0",
 		"react": "18.0.0",
 		"react-native": "0.69.6",
