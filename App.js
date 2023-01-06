@@ -4,7 +4,6 @@ import { StatusBar, StyleSheet, View, ScrollView, Linking, Vibration, useColorSc
 import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog, Snackbar } from "react-native-paper";
 import { NavigationContainer, DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-// import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { createMaterialBottomTabNavigator } from "@juliushuck/react-native-navigation-material-bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import HtmlText from "react-native-html-to-text-updated";
@@ -12,6 +11,22 @@ import DatePicker from "react-native-modern-datepicker";
 
 const months = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."];
 const dayOfWeek = ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."];
+
+const weatherIcons = {
+	"clear-day": "weather-sunny",
+	"clear-night": "weather-night",
+	rain: "weather-rainy",
+	snow: "weather-snowy-heavy",
+	sleet: "weather-snowy-rainy",
+	wind: "weather-windy",
+	fog: "weather-fog",
+	cloudy: "weather-cloudy",
+	"partly-cloudy-day": "weather-partly-cloudy",
+	"partly-cloudy-night": "weather-night-partly-cloudy",
+	hail: "weather-hail",
+	thunderstorm: "weather-lightning",
+	tornado: "weather-tornado"
+};
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -133,9 +148,82 @@ const BellSchedule = () => {
 	);
 };
 
-const HomeRoute = ({ navigation }) => {
-	// const scheme = useColorScheme();
+class BlockRotation extends Component {
+	constructor() {
+		super();
+		this.state = {
+			currentBlock: "",
+			date: ""
+		};
+		fetch("https://eagletime.fly.dev/block")
+			.then((response) => response.json())
+			.catch((error) => console.error(error))
+			.then((data) => {
+				this.setState({
+					currentBlock: data[0].name,
+					date: data[0].date
+				});
+			});
+	}
+	render() {
+		let date = new Date(this.state.date);
+		date.setUTCHours(16);
+		let formattedDate = dayOfWeek[date.getDay()] + " " + months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+		return (
+			<View>
+				<Text variant="titleMedium">{formattedDate}</Text>
+				<Text variant="titleLarge">{this.state.currentBlock}</Text>
+			</View>
+		);
+	}
+}
 
+const WeatherIcon = (props) => {
+	const scheme = useColorScheme();
+	return <MaterialCommunityIcons name={props.icon} size={props.size} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />;
+};
+
+class Weather extends Component {
+	constructor() {
+		super();
+		this.state = {
+			weather: "",
+			weatherName: "",
+			temp: 0,
+			lowTemp: 0,
+			highTemp: 0
+		};
+		fetch("https://eagletime.fly.dev/weather")
+			.then((response) => response.json())
+			.catch((error) => console.error(error))
+			.then((data) => {
+				this.setState({
+					weather: data.currently.icon,
+					weatherName: data.currently.summary,
+					temp: Math.round(data.currently.temperature) + "°C",
+					lowTemp: Math.round(data.daily.data[0].temperatureLow) + "°C",
+					highTemp: Math.round(data.daily.data[0].temperatureHigh) + "°C"
+				});
+			});
+	}
+	render() {
+		return (
+			<View style={styles.weather_section}>
+				<View>
+					<WeatherIcon icon={weatherIcons[this.state.weather]} size={36} />
+					<Text variant="titleLarge">{this.state.weatherName}</Text>
+				</View>
+				<View>
+					<Text variant="titleMedium">{`Low: ${this.state.lowTemp}`}</Text>
+					<Text variant="titleMedium">{`High: ${this.state.highTemp}`}</Text>
+				</View>
+			</View>
+		);
+	}
+}
+
+const HomeRoute = ({ navigation }) => {
+	const scheme = useColorScheme();
 	return (
 		<View style={{ height: "100%" }}>
 			<Appbar.Header mode="small" elevated="true">
@@ -143,141 +231,162 @@ const HomeRoute = ({ navigation }) => {
 					Home
 				</Text>
 			</Appbar.Header>
-			<ScrollView style={styles.main}>
-				{/* <Text variant="headlineSmall">Block rotation</Text> */}
-				<Surface style={styles.section} elevation={2}>
-					<Text variant="titleMedium">ABCD</Text>
-					<Text variant="titleMedium">Day 1</Text>
-					<View style={styles.line}></View>
-				</Surface>
-				<Text variant="headlineSmall">Information</Text>
-				<Surface style={styles.info_section} elevation={2}>
-					<View>
-						<Text variant="titleMedium">Bell schedule</Text>
-					</View>
-					<Button
-						mode="contained"
-						onPress={() => {
-							Vibration.vibrate(5);
-							navigation.navigate("Bell Schedule");
-						}}
-					>
-						View
-					</Button>
-				</Surface>
-				<Surface style={styles.info_section} elevation={2}>
-					<View>
-						<Text variant="titleMedium">Website</Text>
-					</View>
-					<Button
-						mode="contained"
-						onPress={() => {
-							Vibration.vibrate(5);
-							Linking.openURL("https://www.surreyschools.ca/johnht");
-						}}
-					>
-						Visit
-					</Button>
-				</Surface>
-				<Surface style={styles.info_section} elevation={2}>
-					<View>
-						<Text variant="titleMedium">MyEdBC</Text>
-					</View>
-					<Button
-						mode="contained"
-						onPress={() => {
-							Vibration.vibrate(5);
-							Linking.openURL("https://myeducation.gov.bc.ca/aspen/logon.do");
-						}}
-					>
-						Visit
-					</Button>
-				</Surface>
-				<Surface style={styles.info_section} elevation={2}>
-					<View>
-						<Text variant="titleMedium">School Cash Online</Text>
-					</View>
-					<Button
-						mode="contained"
-						onPress={() => {
-							Vibration.vibrate(5);
-							Linking.openURL("https://www.schoolcashonline.com/");
-						}}
-					>
-						Visit
-					</Button>
-				</Surface>
-				<Surface style={styles.info_section} elevation={2}>
-					<View>
-						<Text variant="titleMedium">Counsellor Appointments</Text>
-					</View>
-					<Button
-						mode="contained"
-						onPress={() => {
-							Vibration.vibrate(5);
-							Linking.openURL("https://jh.counsellorappointments.com/");
-						}}
-					>
-						Visit
-					</Button>
-				</Surface>
-				<Surface style={styles.info_section} elevation={2}>
-					<View>
-						<Text variant="titleMedium">Locker Assignments</Text>
-					</View>
-					<Button
-						mode="contained"
-						onPress={() => {
-							Vibration.vibrate(5);
-							Linking.openURL("https://jh.lockerassignment.com/");
-						}}
-					>
-						Visit
-					</Button>
-				</Surface>
-				<Surface style={styles.info_section} elevation={2}>
-					<View>
-						<Text variant="titleMedium">School Map</Text>
-					</View>
-					<Button
-						mode="contained"
-						onPress={() => {
-							Vibration.vibrate(5);
-							Linking.openURL("https://eagletime.appazur.com/media/info/eagletime/map_JH_2019_.jpg_CvI94vg.png");
-						}}
-					>
-						Visit
-					</Button>
-				</Surface>
-				<Surface style={styles.info_section} elevation={2}>
-					<View>
-						<Text variant="titleMedium">Phone</Text>
-					</View>
-					<Button
-						mode="contained"
-						onPress={() => {
-							Vibration.vibrate(5);
-							Linking.openURL("tel:+16045815500");
-						}}
-					>
-						Visit
-					</Button>
-				</Surface>
-				<Surface style={styles.info_section} elevation={2}>
-					<View>
-						<Text variant="titleMedium">Map and Directions</Text>
-					</View>
-					<Button
-						mode="contained"
-						onPress={() => {
-							Vibration.vibrate(5);
-							Linking.openURL("https://goo.gl/maps/K8cF7KdCun4r6RV89");
-						}}
-					>
-						Visit
-					</Button>
-				</Surface>
-				<View style={styles.main}></View>
+			<ScrollView style={styles.scrollview}>
+				<View style={styles.events}>
+					<Text variant="headlineSmall">Today</Text>
+					<Surface style={styles.section} elevation={2}>
+						{/* <Text variant="titleMedium">ABCD</Text>
+						<Text variant="titleMedium">Day 1</Text> */}
+						<BlockRotation />
+						<View style={styles.line} />
+						<Weather color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
+					</Surface>
+					<Text variant="headlineSmall">Information</Text>
+					<Surface style={styles.info_section} elevation={2}>
+						<MaterialCommunityIcons name="bell-outline" size={24} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
+						<View style={styles.view60}>
+							<Text variant="titleMedium">Bell schedule</Text>
+						</View>
+						<Button
+							mode="contained"
+							onPress={() => {
+								Vibration.vibrate(5);
+								navigation.navigate("Bell Schedule");
+							}}
+						>
+							View
+						</Button>
+					</Surface>
+					<Surface style={styles.info_section} elevation={2}>
+						<MaterialCommunityIcons name="earth" size={24} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
+						<View style={styles.view60}>
+							<Text variant="titleMedium">Website</Text>
+							<Text variant="bodySmall">www.surreyschools.ca/johnht</Text>
+						</View>
+						<Button
+							mode="contained"
+							onPress={() => {
+								Vibration.vibrate(5);
+								Linking.openURL("https://www.surreyschools.ca/johnht");
+							}}
+						>
+							Visit
+						</Button>
+					</Surface>
+					<Surface style={styles.info_section} elevation={2}>
+						<MaterialCommunityIcons name="school-outline" size={24} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
+						<View style={styles.view60}>
+							<Text variant="titleMedium">MyEdBC</Text>
+							<Text variant="bodySmall">Check grades, schedule, and view report cards</Text>
+						</View>
+						<Button
+							mode="contained"
+							onPress={() => {
+								Vibration.vibrate(5);
+								Linking.openURL("https://myeducation.gov.bc.ca/aspen/logon.do");
+							}}
+						>
+							Visit
+						</Button>
+					</Surface>
+					<Surface style={styles.info_section} elevation={2}>
+						<MaterialCommunityIcons name="cash" size={24} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
+						<View style={styles.view60}>
+							<Text variant="titleMedium">School Cash Online</Text>
+							<Text variant="bodySmall">Pay school fees</Text>
+						</View>
+						<Button
+							mode="contained"
+							onPress={() => {
+								Vibration.vibrate(5);
+								Linking.openURL("https://www.schoolcashonline.com/");
+							}}
+						>
+							Visit
+						</Button>
+					</Surface>
+					<Surface style={styles.info_section} elevation={2}>
+						<MaterialCommunityIcons name="account-supervisor-outline" size={24} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
+						<View style={styles.view60}>
+							<Text variant="titleMedium">Counsellor Appointments</Text>
+							<Text variant="bodySmall">Book an appointment online</Text>
+						</View>
+						<Button
+							mode="contained"
+							onPress={() => {
+								Vibration.vibrate(5);
+								Linking.openURL("https://jh.counsellorappointments.com/");
+							}}
+						>
+							Visit
+						</Button>
+					</Surface>
+					<Surface style={styles.info_section} elevation={2}>
+						<MaterialCommunityIcons name="locker-multiple" size={24} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
+						<View style={styles.view60}>
+							<Text variant="titleMedium">Locker Assignments</Text>
+							<Text variant="bodySmall">Register and choose a locker. Student ID# required</Text>
+						</View>
+						<Button
+							mode="contained"
+							onPress={() => {
+								Vibration.vibrate(5);
+								Linking.openURL("https://jh.lockerassignment.com/");
+							}}
+						>
+							Visit
+						</Button>
+					</Surface>
+					<Surface style={styles.info_section} elevation={2}>
+						<MaterialCommunityIcons name="map-outline" size={24} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
+						<View style={styles.view60}>
+							<Text variant="titleMedium">School Map</Text>
+							<Text variant="bodySmall">Level 1 and Level 2</Text>
+						</View>
+						<Button
+							mode="contained"
+							onPress={() => {
+								Vibration.vibrate(5);
+								Linking.openURL("https://eagletime.appazur.com/media/info/eagletime/map_JH_2019_.jpg_CvI94vg.png");
+							}}
+						>
+							Visit
+						</Button>
+					</Surface>
+					<Surface style={styles.info_section} elevation={2}>
+						<MaterialCommunityIcons name="phone-outline" size={24} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
+						<View style={styles.view60}>
+							<Text variant="titleMedium">Phone</Text>
+							<Text variant="bodySmall">(604)-581-5500</Text>
+						</View>
+						<Button
+							mode="contained"
+							onPress={() => {
+								Vibration.vibrate(5);
+								Linking.openURL("tel:+16045815500");
+							}}
+						>
+							Visit
+						</Button>
+					</Surface>
+					<Surface style={styles.info_section} elevation={2}>
+						<MaterialCommunityIcons name="map-marker-outline" size={24} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
+						<View style={styles.view60}>
+							<Text variant="titleMedium">Map and Directions</Text>
+							<Text variant="bodySmall">15350 - 99th Avenue, Surrey, BC V3R 0R9</Text>
+						</View>
+						<Button
+							mode="contained"
+							onPress={() => {
+								Vibration.vibrate(5);
+								Linking.openURL("https://goo.gl/maps/K8cF7KdCun4r6RV89");
+							}}
+						>
+							Visit
+						</Button>
+					</Surface>
+				</View>
+				<View style={styles.main} />
 			</ScrollView>
 		</View>
 	);
@@ -619,8 +728,13 @@ const styles = StyleSheet.create({
 	info_section: {
 		padding: 25,
 		borderRadius: 20,
-		marginTop: 10,
-		marginBottom: 10,
+		marginVertical: 10,
+		flexDirection: "row",
+		flex: 1,
+		justifyContent: "space-between",
+		alignItems: "center"
+	},
+	weather_section: {
 		flexDirection: "row",
 		flex: 1,
 		justifyContent: "space-between",
@@ -644,5 +758,12 @@ const styles = StyleSheet.create({
 	},
 	text_with_margin: {
 		marginBottom: 10
+	},
+	view60: {
+		width: "60%"
+	},
+	row: {
+		display: "flex",
+		flexDirection: "row"
 	}
 });
