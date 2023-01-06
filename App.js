@@ -7,7 +7,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { createMaterialBottomTabNavigator } from "@juliushuck/react-native-navigation-material-bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import HtmlText from "react-native-html-to-text";
+import HtmlText from "react-native-html-to-text-updated";
 import DatePicker from "react-native-modern-datepicker";
 
 const months = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."];
@@ -346,8 +346,7 @@ class CalendarRoute extends Component {
 							}}
 						>
 							{appendedDates.length > 1 ? <View style={styles.line}></View> : null}
-
-							<Text variant="titleMedium" style={{ marginTop: 20 }}>
+							<Text variant="titleMedium" style={{ marginVertical: 10 }}>
 								{formattedDate} — <Text variant="titleLarge">{a.name}</Text>
 							</Text>
 						</View>
@@ -363,6 +362,7 @@ class CalendarRoute extends Component {
 								}
 							}}
 						>
+							{appendedDates.length > 1 ? <View style={styles.line}></View> : null}
 							<Text variant="titleMedium" style={{ marginTop: 20 }}>
 								{formattedDate}
 							</Text>

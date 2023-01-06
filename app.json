@@ -1,41 +1,49 @@
 {
-  "expo": {
-    "name": "eagletime",
-    "slug": "eagletime",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "userInterfaceStyle": "automatic",
-      "supportsTablet": true
-    },
-    "android": {
-      "userInterfaceStyle": "automatic",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      },
-      "package": "com.jh.eagletime"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "5be5050a-4560-4a61-b1f5-13a9dc6022d6"
-      }
-    }
-  }
+	"expo": {
+		"name": "eagletime",
+		"slug": "eagletime",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/icon.png",
+		"userInterfaceStyle": "automatic",
+		"splash": {
+			"image": "./assets/splash.png",
+			"resizeMode": "contain",
+			"backgroundColor": "#ffffff"
+		},
+		"updates": {
+			"fallbackToCacheTimeout": 0
+		},
+		"assetBundlePatterns": ["**/*"],
+		"ios": {
+			"userInterfaceStyle": "automatic",
+			"supportsTablet": true
+		},
+		"android": {
+			"userInterfaceStyle": "automatic",
+			"adaptiveIcon": {
+				"foregroundImage": "./assets/adaptive-icon.png",
+				"backgroundColor": "#FFFFFF"
+			},
+			"package": "com.jh.eagletime"
+		},
+		"web": {
+			"favicon": "./assets/favicon.png"
+		},
+		"extra": {
+			"eas": {
+				"projectId": "5be5050a-4560-4a61-b1f5-13a9dc6022d6"
+			}
+		},
+		"plugins": [
+			[
+				"expo-build-properties",
+				{
+					"android": {
+						"enableProguardInReleaseBuilds": true
+					}
+				}
+			]
+		]
+	}
 }
