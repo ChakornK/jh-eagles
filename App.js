@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Component } from "react";
 import { StatusBar, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme, Image, FlatList, Pressable } from "react-native";
-import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog, Snackbar } from "react-native-paper";
+import { Text, Appbar, Button, MD3DarkTheme as DefaultDarkTheme, MD3LightTheme as DefaultLightTheme, Provider as PaperProvider, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog, Snackbar, Menu } from "react-native-paper";
 import { NavigationContainer, useIsFocused } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialBottomTabNavigator } from "@juliushuck/react-native-navigation-material-bottom-tabs";
@@ -9,6 +9,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import HtmlText from "react-native-html-to-text-updated";
 import DatePicker from "react-native-modern-datepicker";
 import ImageView from "react-native-image-viewing";
+import createDynamicThemeColors from "./createMaterialYouPalette.js";
 
 const months = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."];
 const dayOfWeek = ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."];
@@ -29,6 +30,26 @@ const weatherIcons = {
 	tornado: "weather-tornado",
 	unknown: "help"
 };
+
+const materialYouPalette = createDynamicThemeColors({
+	sourceColor: "#3c92e8"
+});
+const MD3DarkTheme = {
+	...DefaultDarkTheme,
+	colors: {
+		...DefaultDarkTheme.colors,
+		...materialYouPalette.dark
+	}
+};
+const MD3LightTheme = {
+	...DefaultLightTheme,
+	colors: {
+		...DefaultLightTheme.colors,
+		...materialYouPalette.light
+	}
+};
+
+// console.log(materialYouPalette);
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -160,9 +181,9 @@ class BlockRotation extends Component {
 			.then((response) => response.json())
 			.catch((error) => console.error(error))
 			.then((data) => {
-				if (data != []) {
+				if (data[0] != null) {
 					this.setState({
-						currentBlock: data[0].name
+						currentBlock: data[0]?.name
 					});
 				} else {
 					this.setState({
@@ -203,11 +224,11 @@ class Weather extends Component {
 			.catch((error) => console.error(error))
 			.then((data) => {
 				this.setState({
-					weather: data.currently.icon,
-					weatherName: data.currently.summary,
-					temp: Math.round(data.currently.temperature) + "°C",
-					lowTemp: Math.round(data.daily.data[0].temperatureLow) + "°C",
-					highTemp: Math.round(data.daily.data[0].temperatureHigh) + "°C"
+					weather: data.currently?.icon,
+					weatherName: data.currently?.summary,
+					temp: Math.round(data.currently?.temperature) + "°C",
+					lowTemp: Math.round(data.daily?.data[0]?.temperatureLow) + "°C",
+					highTemp: Math.round(data.daily?.data[0]?.temperatureHigh) + "°C"
 				});
 			});
 	}
@@ -242,11 +263,7 @@ const HomeRoute = ({ navigation }) => {
 	const scheme = useColorScheme();
 	return (
 		<View style={{ height: "100%" }}>
-			<Appbar.Header mode="small" elevated="true">
-				<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
-					Home
-				</Text>
-			</Appbar.Header>
+			<TopAppBar navigation={navigation} name="Home" />
 			<ScrollView style={styles.scrollview}>
 				<View style={styles.events}>
 					<Text variant="headlineSmall">Today</Text>
@@ -419,7 +436,7 @@ const MessageCard = ({ time, text, attachments, index, totalIndex }) => {
 	var showImages = images.map((a) => {
 		const [imgViewerVisible, setImgViewerVisible] = React.useState(false);
 		return (
-			<View>
+			<View key={index}>
 				<ImageView
 					images={[{ uri: a.url }]}
 					imageIndex={0}
@@ -515,14 +532,12 @@ const MessageCard = ({ time, text, attachments, index, totalIndex }) => {
 const MessagesRoute = ({ navigation }) => {
 	const isFocused = useIsFocused();
 
-	return <View>{isFocused ? <MessagesScreen /> : null}</View>;
-	// return (
-	// 	<Appbar.Header mode="small" elevated="true">
-	// 		<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
-	// 			Messages
-	// 		</Text>
-	// 	</Appbar.Header>
-	// );
+	return (
+		<View>
+			<TopAppBar navigation={navigation} name="Messages" />
+			{isFocused ? <MessagesScreen /> : null}
+		</View>
+	);
 };
 
 class MessagesScreen extends Component {
@@ -543,11 +558,6 @@ class MessagesScreen extends Component {
 	render() {
 		return (
 			<View>
-				<Appbar.Header mode="small" elevated="true">
-					<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
-						Messages
-					</Text>
-				</Appbar.Header>
 				<FlatList
 					style={styles.scrollview}
 					data={this.state.messageList}
@@ -595,10 +605,15 @@ const CalendarPicker = (props) => {
 	);
 };
 
-var CalendarRoute = () => {
+var CalendarRoute = ({ navigation }) => {
 	const isFocused = useIsFocused();
 
-	return <View>{isFocused ? <CalendarScreen /> : null}</View>;
+	return (
+		<View>
+			<TopAppBar navigation={navigation} name="Calendar" />
+			{isFocused ? <CalendarScreen /> : null}
+		</View>
+	);
 };
 
 class CalendarScreen extends Component {
@@ -717,11 +732,6 @@ class CalendarScreen extends Component {
 
 		return (
 			<View style={{ height: "100%" }}>
-				<Appbar.Header mode="small" elevated="true">
-					<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
-						Calendar
-					</Text>
-				</Appbar.Header>
 				<Portal>
 					<Dialog dismissable={true} visible={this.state.calendarVisible} onDismiss={() => this.setState({ calendarVisible: false })}>
 						<Dialog.Title>Pick a date</Dialog.Title>
@@ -815,6 +825,17 @@ class CalendarScreen extends Component {
 	}
 }
 
+const AboutScreen = () => {
+	const scheme = useColorScheme();
+	return (
+		<PaperProvider theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
+			<View>
+				<Text>Test</Text>
+			</View>
+		</PaperProvider>
+	);
+};
+
 const MainScreen = () => {
 	const scheme = useColorScheme();
 	return (
@@ -859,10 +880,15 @@ const MainScreen = () => {
 					listeners={() => ({
 						tabPress: (e) => {
 							Vibration.vibrate(5);
-							CalendarRoute = () => {
+							CalendarRoute = ({ navigation }) => {
 								const isFocused = useIsFocused();
 
-								return <View>{isFocused ? <CalendarScreen /> : null}</View>;
+								return (
+									<View>
+										<TopAppBar navigation={navigation} name="Calendar" />
+										{isFocused ? <CalendarScreen /> : null}
+									</View>
+								);
 							};
 						}
 					})}
@@ -878,12 +904,43 @@ const TopNavBar = ({ navigation, route, options, back }) => {
 		return (
 			<Appbar.Header mode="small" elevated="true" theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
 				{back ? <Appbar.BackAction onPress={navigation.goBack} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} /> : null}
-				<Text variant="headlineLarge" style={{ marginLeft: 25 }} theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
-					{route.name}
-				</Text>
+				<Appbar.Content title={route.name} theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme} titleStyle={{ marginLeft: 10, marginBottom: -10, paddingTop: 5, fontSize: 32 }} />
 			</Appbar.Header>
 		);
 	}
+};
+
+const TopAppBar = ({ navigation, name }) => {
+	const scheme = useColorScheme();
+	const [menuVisible, setMenuVisible] = React.useState(false);
+	return (
+		<Appbar.Header mode="small" elevated="true" theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
+			<Appbar.Content title={name} titleStyle={{ marginLeft: 10, marginBottom: -10, paddingTop: 5, fontSize: 32 }} />
+			<Menu
+				visible={menuVisible}
+				onDismiss={() => {
+					setMenuVisible(false);
+				}}
+				anchor={
+					<Appbar.Action
+						icon="dots-vertical"
+						onPress={() => {
+							setMenuVisible(true);
+						}}
+					/>
+				}
+			>
+				<Menu.Item
+					onPress={() => {
+						navigation.navigate("About");
+						setMenuVisible(false);
+					}}
+					leadingIcon="information-outline"
+					title="About"
+				/>
+			</Menu>
+		</Appbar.Header>
+	);
 };
 
 export default function App() {
@@ -898,6 +955,7 @@ export default function App() {
 			>
 				<Stack.Screen name="Main" component={MainScreen} />
 				<Stack.Screen name="Bell Schedule" component={BellSchedule} />
+				<Stack.Screen name="About" component={AboutScreen} />
 			</Stack.Navigator>
 		</NavigationContainer>
 	);
