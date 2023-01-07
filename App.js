@@ -1,13 +1,14 @@
 import * as React from "react";
 import { Component } from "react";
-import { StatusBar, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme, Appearance } from "react-native";
-import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, adaptNavigationTheme, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog, Snackbar } from "react-native-paper";
-import { NavigationContainer, DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme } from "@react-navigation/native";
+import { StatusBar, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme, Image, FlatList, Pressable } from "react-native";
+import { Text, Appbar, Button, MD3DarkTheme, MD3LightTheme, Provider as PaperProvider, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog, Snackbar } from "react-native-paper";
+import { NavigationContainer, useIsFocused } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialBottomTabNavigator } from "@juliushuck/react-native-navigation-material-bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import HtmlText from "react-native-html-to-text-updated";
 import DatePicker from "react-native-modern-datepicker";
+import ImageView from "react-native-image-viewing";
 
 const months = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."];
 const dayOfWeek = ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."];
@@ -182,7 +183,7 @@ class BlockRotation extends Component {
 	}
 }
 
-const WeatherIcon = (props) => {
+const Icon = (props) => {
 	const scheme = useColorScheme();
 	return <MaterialCommunityIcons name={props.icon} size={props.size} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />;
 };
@@ -221,7 +222,7 @@ class Weather extends Component {
 							alignItems: "center"
 						}}
 					>
-						<WeatherIcon icon={weatherIcons[this.state.weather]} size={36} />
+						<Icon icon={weatherIcons[this.state.weather]} size={36} />
 						<Text variant="titleLarge" style={{ marginLeft: 10 }}>
 							{this.state.temp}
 						</Text>
@@ -405,16 +406,160 @@ const HomeRoute = ({ navigation }) => {
 	);
 };
 
-const MessagesRoute = ({ navigation }) => {
-	// const scheme = useColorScheme();
+const MessageCard = ({ time, text, attachments, index, totalIndex }) => {
+	const scheme = useColorScheme();
+	var images = [];
+	if (attachments.length > 0) {
+		for (let i = 0; i < attachments.length; i++) {
+			if (attachments[i].url.match(/\.(jpg|jpeg|png|gif)/)) {
+				images.push(attachments[i]);
+			}
+		}
+	}
+	var showImages = images.map((a) => {
+		const [imgViewerVisible, setImgViewerVisible] = React.useState(false);
+		return (
+			<View>
+				<ImageView
+					images={[{ uri: a.url }]}
+					imageIndex={0}
+					visible={imgViewerVisible}
+					onRequestClose={() => {
+						setImgViewerVisible(false);
+					}}
+					backgroundColor={scheme == "light" ? "#FFF" : "#000"}
+					HeaderComponent={() => {
+						return (
+							<View
+								style={{
+									padding: 15,
+									paddingTop: 25,
+									display: "flex",
+									flexDirection: "row",
+									alignItems: "center",
+									justifyContent: "space-between",
+									backgroundColor: scheme == "light" ? "#FFFA" : "#000A"
+								}}
+							>
+								<View
+									style={{
+										flexDirection: "row",
+										alignItems: "center"
+									}}
+								>
+									<Pressable
+										onPress={() => {
+											setImgViewerVisible(false);
+										}}
+										style={{
+											marginRight: 10
+										}}
+									>
+										<Icon icon="window-close" size={24} />
+									</Pressable>
+									<Text>{a.url.replace(/https?:(.*\/)+/, "")}</Text>
+								</View>
+								<Pressable
+									onPress={() => {
+										Linking.openURL(a.url);
+									}}
+									style={{
+										marginLeft: 10
+									}}
+								>
+									<Icon icon="open-in-app" size={24} />
+								</Pressable>
+							</View>
+						);
+					}}
+				/>
+				<Pressable
+					onPress={() => {
+						setImgViewerVisible(true);
+					}}
+				>
+					<Image
+						style={{
+							width: "100%",
+							height: undefined,
+							aspectRatio: a.x / a.y,
+							borderRadius: 10,
+							marginTop: 10
+						}}
+						source={{
+							uri: a.url
+						}}
+					/>
+				</Pressable>
+			</View>
+		);
+	});
 	return (
-		<Appbar.Header mode="small" elevated="true">
-			<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
-				Messages
-			</Text>
-		</Appbar.Header>
+		<View style={styles.events}>
+			<Surface style={styles.info_section} elevation={2}>
+				<View
+					style={{
+						width: "100%"
+					}}
+				>
+					<Text variant="bodySmall">{time}</Text>
+					<Text variant="titleSmall">{text}</Text>
+					{showImages}
+				</View>
+			</Surface>
+			{index == totalIndex - 1 ? <View style={{ height: 280 }} /> : null}
+		</View>
 	);
 };
+
+const MessagesRoute = ({ navigation }) => {
+	const isFocused = useIsFocused();
+
+	return <View>{isFocused ? <MessagesScreen /> : null}</View>;
+	// return (
+	// 	<Appbar.Header mode="small" elevated="true">
+	// 		<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
+	// 			Messages
+	// 		</Text>
+	// 	</Appbar.Header>
+	// );
+};
+
+class MessagesScreen extends Component {
+	constructor() {
+		super();
+		this.state = {
+			messageList: []
+		};
+		fetch("https://eagletime.fly.dev/messages")
+			.then((response) => response.json())
+			.catch((error) => console.error(error))
+			.then((messages) => {
+				this.setState({
+					messageList: messages
+				});
+			});
+	}
+	render() {
+		return (
+			<View>
+				<Appbar.Header mode="small" elevated="true">
+					<Text variant="headlineLarge" style={{ marginLeft: 25 }}>
+						Messages
+					</Text>
+				</Appbar.Header>
+				<FlatList
+					style={styles.scrollview}
+					data={this.state.messageList}
+					renderItem={({ item, index }) => {
+						return <MessageCard time={item.date} text={item.text} attachments={item.atts} index={index} totalIndex={this.state.messageList.length} />;
+					}}
+				/>
+				<ActivityIndicator animating={true} size={"small"} style={{ marginTop: 20 }} />
+			</View>
+		);
+	}
+}
 
 const CalendarPicker = (props) => {
 	const scheme = useColorScheme();
@@ -450,7 +595,13 @@ const CalendarPicker = (props) => {
 	);
 };
 
-class CalendarRoute extends Component {
+var CalendarRoute = () => {
+	const isFocused = useIsFocused();
+
+	return <View>{isFocused ? <CalendarScreen /> : null}</View>;
+};
+
+class CalendarScreen extends Component {
 	constructor() {
 		super();
 		this.state = {
@@ -678,6 +829,9 @@ const MainScreen = () => {
 					listeners={() => ({
 						tabPress: (e) => {
 							Vibration.vibrate(5);
+							CalendarRoute = () => {
+								return <View />;
+							};
 						}
 					})}
 				/>
@@ -690,6 +844,9 @@ const MainScreen = () => {
 					listeners={() => ({
 						tabPress: (e) => {
 							Vibration.vibrate(5);
+							CalendarRoute = () => {
+								return <View />;
+							};
 						}
 					})}
 				/>
@@ -702,6 +859,11 @@ const MainScreen = () => {
 					listeners={() => ({
 						tabPress: (e) => {
 							Vibration.vibrate(5);
+							CalendarRoute = () => {
+								const isFocused = useIsFocused();
+
+								return <View>{isFocused ? <CalendarScreen /> : null}</View>;
+							};
 						}
 					})}
 				/>
@@ -744,13 +906,13 @@ export default function App() {
 const styles = StyleSheet.create({
 	section: {
 		padding: 25,
-		borderRadius: 20,
+		borderRadius: 15,
 		marginTop: 10,
 		marginBottom: 25
 	},
 	info_section: {
 		padding: 25,
-		borderRadius: 20,
+		borderRadius: 15,
 		marginVertical: 10,
 		flexDirection: "row",
 		flex: 1,
