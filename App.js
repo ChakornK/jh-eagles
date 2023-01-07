@@ -25,7 +25,8 @@ const weatherIcons = {
 	"partly-cloudy-night": "weather-night-partly-cloudy",
 	hail: "weather-hail",
 	thunderstorm: "weather-lightning",
-	tornado: "weather-tornado"
+	tornado: "weather-tornado",
+	unknown: "help"
 };
 
 const Tab = createMaterialBottomTabNavigator();
@@ -152,22 +153,25 @@ class BlockRotation extends Component {
 	constructor() {
 		super();
 		this.state = {
-			currentBlock: "",
-			date: ""
+			currentBlock: ""
 		};
 		fetch("https://eagletime.fly.dev/block")
 			.then((response) => response.json())
 			.catch((error) => console.error(error))
 			.then((data) => {
-				this.setState({
-					currentBlock: data[0].name,
-					date: data[0].date
-				});
+				if (data != []) {
+					this.setState({
+						currentBlock: data[0].name
+					});
+				} else {
+					this.setState({
+						currentBlock: "No block rotation"
+					});
+				}
 			});
 	}
 	render() {
-		let date = new Date(this.state.date);
-		date.setUTCHours(16);
+		let date = new Date();
 		let formattedDate = dayOfWeek[date.getDay()] + " " + months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
 		return (
 			<View>
@@ -187,11 +191,11 @@ class Weather extends Component {
 	constructor() {
 		super();
 		this.state = {
-			weather: "",
-			weatherName: "",
-			temp: 0,
-			lowTemp: 0,
-			highTemp: 0
+			weather: "unknown",
+			weatherName: "Unknown",
+			temp: "--°C",
+			lowTemp: "--°C",
+			highTemp: "--°C"
 		};
 		fetch("https://eagletime.fly.dev/weather")
 			.then((response) => response.json())
@@ -210,7 +214,18 @@ class Weather extends Component {
 		return (
 			<View style={styles.weather_section}>
 				<View>
-					<WeatherIcon icon={weatherIcons[this.state.weather]} size={36} />
+					<View
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							alignItems: "center"
+						}}
+					>
+						<WeatherIcon icon={weatherIcons[this.state.weather]} size={36} />
+						<Text variant="titleLarge" style={{ marginLeft: 10 }}>
+							{this.state.temp}
+						</Text>
+					</View>
 					<Text variant="titleLarge">{this.state.weatherName}</Text>
 				</View>
 				<View>
@@ -235,8 +250,6 @@ const HomeRoute = ({ navigation }) => {
 				<View style={styles.events}>
 					<Text variant="headlineSmall">Today</Text>
 					<Surface style={styles.section} elevation={2}>
-						{/* <Text variant="titleMedium">ABCD</Text>
-						<Text variant="titleMedium">Day 1</Text> */}
 						<BlockRotation />
 						<View style={styles.line} />
 						<Weather color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
@@ -403,6 +416,40 @@ const MessagesRoute = ({ navigation }) => {
 	);
 };
 
+const CalendarPicker = (props) => {
+	const scheme = useColorScheme();
+	return (
+		<DatePicker
+			mode={props.mode}
+			options={
+				scheme == "light"
+					? {
+							backgroundColor: MD3LightTheme.colors.elevation.level3,
+							textHeaderColor: MD3LightTheme.colors.onSurface, // Month and year text
+							textDefaultColor: MD3LightTheme.colors.onSurface, // Day text
+							selectedTextColor: MD3LightTheme.colors.onPrimary, // Day text when selected
+							mainColor: MD3LightTheme.colors.primary, // accent color (arrows and selected bubble)
+							textSecondaryColor: MD3LightTheme.colors.onSurfaceDisabled, // days of week label
+							borderColor: "#00000000"
+					  }
+					: {
+							backgroundColor: MD3DarkTheme.colors.elevation.level3,
+							textHeaderColor: MD3DarkTheme.colors.onSurface, // Month and year text
+							textDefaultColor: MD3DarkTheme.colors.onSurface, // Day text
+							selectedTextColor: MD3DarkTheme.colors.onPrimary, // Day text when selected
+							mainColor: MD3DarkTheme.colors.primary, // accent color (arrows and selected bubble)
+							textSecondaryColor: MD3DarkTheme.colors.onSurfaceDisabled, // days of week label
+							borderColor: "#ffffff00"
+					  }
+			}
+			minimumDate={props.minimumDate}
+			maximumDate={props.maximumDate}
+			onDateChange={props.onDateChange}
+			selected={props.minimumDate}
+		/>
+	);
+};
+
 class CalendarRoute extends Component {
 	constructor() {
 		super();
@@ -410,7 +457,6 @@ class CalendarRoute extends Component {
 			eventList: [],
 			fabExtended: true,
 			calendarVisible: false,
-			lastRefresh: Date(Date.now()).toString(),
 			minDate: "",
 			maxDate: "",
 			selectedDate: "",
@@ -427,16 +473,8 @@ class CalendarRoute extends Component {
 					maxDate: events[events.length - 1].date
 				});
 			});
-
-		this.refreshScreen = this.refreshScreen.bind(this);
-	}
-	refreshScreen() {
-		this.setState({ lastRefresh: Date(Date.now()).toString() });
 	}
 	render() {
-		Appearance.addChangeListener(() => {
-			this.refreshScreen();
-		});
 		var appendedDates = [];
 
 		var events = this.state.eventList.map((a, i) => {
@@ -537,29 +575,8 @@ class CalendarRoute extends Component {
 					<Dialog dismissable={true} visible={this.state.calendarVisible} onDismiss={() => this.setState({ calendarVisible: false })}>
 						<Dialog.Title>Pick a date</Dialog.Title>
 						<Dialog.Content>
-							<DatePicker
+							<CalendarPicker
 								mode="calendar"
-								options={
-									Appearance.getColorScheme() == "light"
-										? {
-												backgroundColor: MD3LightTheme.colors.elevation.level3,
-												textHeaderColor: MD3LightTheme.colors.onSurface, // Month and year text
-												textDefaultColor: MD3LightTheme.colors.onSurface, // Day text
-												selectedTextColor: MD3LightTheme.colors.onPrimary, // Day text when selected
-												mainColor: MD3LightTheme.colors.primary, // accent color (arrows and selected bubble)
-												textSecondaryColor: MD3LightTheme.colors.onSurfaceDisabled, // days of week label
-												borderColor: "#00000000"
-										  }
-										: {
-												backgroundColor: MD3DarkTheme.colors.elevation.level3,
-												textHeaderColor: MD3DarkTheme.colors.onSurface, // Month and year text
-												textDefaultColor: MD3DarkTheme.colors.onSurface, // Day text
-												selectedTextColor: MD3DarkTheme.colors.onPrimary, // Day text when selected
-												mainColor: MD3DarkTheme.colors.primary, // accent color (arrows and selected bubble)
-												textSecondaryColor: MD3DarkTheme.colors.onSurfaceDisabled, // days of week label
-												borderColor: "#ffffff00"
-										  }
-								}
 								minimumDate={this.state.minDate}
 								maximumDate={this.state.maxDate}
 								onDateChange={(date) => {
@@ -570,7 +587,13 @@ class CalendarRoute extends Component {
 							/>
 						</Dialog.Content>
 						<Dialog.Actions>
-							<Button onPress={() => this.setState({ calendarVisible: false })}>Cancel</Button>
+							<Button
+								onPress={() => {
+									this.setState({ calendarVisible: false });
+								}}
+							>
+								Cancel
+							</Button>
 							<Button
 								onPress={() => {
 									this.setState({ calendarVisible: false });
@@ -580,7 +603,7 @@ class CalendarRoute extends Component {
 										this.setState({ snackbarVisible: true });
 										setTimeout(() => {
 											this.setState({ snackbarVisible: false });
-										}, 2000);
+										}, 5000);
 									}
 								}}
 							>
