@@ -1017,7 +1017,14 @@ const MainScreen = () => {
 								return (
 									<View>
 										<TopAppBar navigation={navigation} name="Calendar" />
-										{isFocused ? <CalendarScreen /> : null}
+										<View
+											style={{
+												height: "100%",
+												marginBottom: -184
+											}}
+										>
+											{isFocused ? <CalendarScreen /> : null}
+										</View>
 									</View>
 								);
 							};
