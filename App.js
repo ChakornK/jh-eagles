@@ -835,7 +835,9 @@ class GithubUser extends Component {
 			var user = data[0] ? data[i] : data;
 			return (
 				<TouchableRipple
-					onPress={() => {}}
+					onPress={() => {
+						Linking.openURL(user.html_url);
+					}}
 					style={{
 						marginHorizontal: -25,
 						paddingVertical: 10,
