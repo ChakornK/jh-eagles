@@ -1,9 +1,11 @@
+import "react-native-gesture-handler";
+
 import * as React from "react";
 import { Component } from "react";
-import { StatusBar, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme, Image, FlatList, Pressable } from "react-native";
-import { Text, Appbar, Button, MD3DarkTheme as DefaultDarkTheme, MD3LightTheme as DefaultLightTheme, Provider as PaperProvider, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog, Snackbar, Menu } from "react-native-paper";
+import { StatusBar, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme, Image, FlatList, Pressable, PlatformColor } from "react-native";
+import { Text, Appbar, Button, MD3DarkTheme as DefaultDarkTheme, MD3LightTheme as DefaultLightTheme, Provider as PaperProvider, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog, Snackbar, Menu, BottomNavigation, TouchableRipple } from "react-native-paper";
 import { NavigationContainer, useIsFocused } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialBottomTabNavigator } from "@juliushuck/react-native-navigation-material-bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import HtmlText from "react-native-html-to-text-updated";
@@ -31,29 +33,37 @@ const weatherIcons = {
 	unknown: "help"
 };
 
-const materialYouPalette = createDynamicThemeColors({
-	sourceColor: "#3c92e8"
-});
-const MD3DarkTheme = {
-	...DefaultDarkTheme,
-	colors: {
-		...DefaultDarkTheme.colors,
-		...materialYouPalette.dark
-	}
+var MD3DarkTheme = {
+	...DefaultDarkTheme
 };
-const MD3LightTheme = {
-	...DefaultLightTheme,
-	colors: {
-		...DefaultLightTheme.colors,
-		...materialYouPalette.light
-	}
+var MD3LightTheme = {
+	...DefaultLightTheme
 };
+function generateColorPalette(color) {
+	var materialYouPalette = createDynamicThemeColors({
+		sourceColor: color
+	});
+	MD3DarkTheme = {
+		...DefaultDarkTheme,
+		colors: {
+			...DefaultDarkTheme.colors,
+			...materialYouPalette.dark
+		}
+	};
+	MD3LightTheme = {
+		...DefaultLightTheme,
+		colors: {
+			...DefaultLightTheme.colors,
+			...materialYouPalette.light
+		}
+	};
+}
 
-// console.log(materialYouPalette);
+generateColorPalette("#4285F4");
 
 const Tab = createMaterialBottomTabNavigator();
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 // console.log(MD3DarkTheme);
 
@@ -611,7 +621,14 @@ var CalendarRoute = ({ navigation }) => {
 	return (
 		<View>
 			<TopAppBar navigation={navigation} name="Calendar" />
-			{isFocused ? <CalendarScreen /> : null}
+			<View
+				style={{
+					height: "100%",
+					marginBottom: -184
+				}}
+			>
+				{isFocused ? <CalendarScreen /> : null}
+			</View>
 		</View>
 	);
 };
@@ -643,91 +660,64 @@ class CalendarScreen extends Component {
 	render() {
 		var appendedDates = [];
 
-		var events = this.state.eventList.map((a, i) => {
-			if (!appendedDates.includes(a.date)) {
-				appendedDates.push(a.date);
-				let date = new Date(a.date);
+		var events = this.state.eventList.map((data, index) => {
+			if (!appendedDates.includes(data.date)) {
+				var includeDate = true;
+				appendedDates.push(data.date);
+				let date = new Date(data.date);
 				date.setUTCHours(16);
-				let formattedDate = dayOfWeek[date.getDay()] + " " + months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
-				if (a.cal_mode === 1) {
-					return (
-						<View
-							key={a.date}
-							style={styles.events}
-							onLayout={(event) => {
-								this.state.datePositions[a.date] = Math.floor(event.nativeEvent.layout.y);
-							}}
-						>
-							{appendedDates.length > 1 ? <View style={styles.line}></View> : null}
-							<Text variant="titleMedium" style={{ marginVertical: 10 }}>
-								{formattedDate} — <Text variant="titleLarge">{a.name}</Text>
+				var formattedDate = dayOfWeek[date.getDay()] + " " + months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+			} else {
+				var includeDate = false;
+			}
+
+			return (
+				<View
+					key={includeDate ? data.date : index}
+					style={styles.events}
+					onLayout={
+						includeDate
+							? (event) => {
+									this.state.datePositions[data.date] = Math.floor(event.nativeEvent.layout.y);
+							  }
+							: null
+					}
+				>
+					{appendedDates.length > 1 && includeDate ? <View style={styles.line} /> : null}
+					{includeDate ? (
+						data.cal_mode === 1 ? (
+							<Text variant="titleMedium" style={{ marginTop: 20 }}>
+								{formattedDate} — <Text variant="titleLarge">{data.name}</Text>
 							</Text>
-						</View>
-					);
-				} else {
-					return (
-						<View
-							key={i}
-							style={styles.events}
-							onLayout={(event) => {
-								if (!this.state.datePositions[a.date]) {
-									this.state.datePositions[a.date] = Math.floor(event.nativeEvent.layout.y);
-								}
-							}}
-						>
-							{appendedDates.length > 1 ? <View style={styles.line}></View> : null}
+						) : (
 							<Text variant="titleMedium" style={{ marginTop: 20 }}>
 								{formattedDate}
 							</Text>
-							<Surface style={styles.info_section} elevation={2}>
-								<View>
-									<Text style={styles.text_with_margin} variant="titleLarge">
-										{a.name}
-									</Text>
-									{a.start ? (
-										a.end ? (
-											<Text style={styles.text_with_margin} variant="titleMedium">
-												{a.start} - {a.end}
-											</Text>
-										) : (
-											<Text style={styles.text_with_margin} variant="titleMedium">
-												{a.start}
-											</Text>
-										)
-									) : (
-										<View style={styles.text_with_margin}></View>
-									)}
-									{a.description ? <HtmlText html={a.description}></HtmlText> : null}
-								</View>
-							</Surface>
-						</View>
-					);
-				}
-			} else {
-				return (
-					<View key={i} style={styles.events}>
+						)
+					) : null}
+					{data.cal_mode === 1 ? null : (
 						<Surface style={styles.info_section} elevation={2}>
 							<View>
-								<Text variant="titleLarge">{a.name}</Text>
-								{a.start ? (
-									a.end ? (
+								<Text variant="titleLarge">{data.name}</Text>
+								{data.start ? (
+									data.end ? (
 										<Text style={styles.text_with_margin} variant="titleMedium">
-											{a.start} - {a.end}
+											{data.start} - {data.end}
 										</Text>
 									) : (
 										<Text style={styles.text_with_margin} variant="titleMedium">
-											{a.start}
+											{data.start}
 										</Text>
 									)
 								) : (
 									<View style={styles.text_with_margin}></View>
 								)}
-								{a.description ? <HtmlText html={a.description}></HtmlText> : null}
+								{data.description ? <HtmlText html={data.description}></HtmlText> : null}
 							</View>
 						</Surface>
-					</View>
-				);
-			}
+					)}
+				</View>
+			);
 		});
 
 		return (
@@ -825,14 +815,153 @@ class CalendarScreen extends Component {
 	}
 }
 
+class GithubUser extends Component {
+	constructor() {
+		super();
+		this.state = {
+			contributors: []
+		};
+		fetch("https://api.github.com/repos/chakornk/eagletime-react-native/contributors")
+			.then((response) => response.json())
+			.catch((error) => console.error(error))
+			.then((data) => {
+				this.setState({
+					contributors: data
+				});
+			});
+	}
+	render() {
+		var users = this.state.contributors.map((data, i) => {
+			var user = data[0] ? data[i] : data;
+			return (
+				<TouchableRipple
+					onPress={() => {}}
+					style={{
+						marginHorizontal: -25,
+						paddingVertical: 10,
+						paddingHorizontal: 25
+					}}
+					key={i}
+				>
+					<View
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							alignItems: "center",
+							justifyContent: "flex-start"
+						}}
+					>
+						<Image
+							style={{
+								width: 48,
+								height: 48,
+								borderRadius: 9999,
+								marginRight: 10
+							}}
+							source={{
+								uri: `https://avatars.githubusercontent.com/u/${user.id}`
+							}}
+						/>
+						<View>
+							<Text variant="titleMedium">{user.login}</Text>
+							<Text
+								variant="titleSmall"
+								style={{
+									color: MD3DarkTheme.colors.onSurfaceVariant
+								}}
+							>
+								{user.contributions} contributions
+							</Text>
+						</View>
+					</View>
+				</TouchableRipple>
+			);
+		});
+
+		return <View>{users}</View>;
+	}
+}
+
 const AboutScreen = () => {
 	const scheme = useColorScheme();
 	return (
 		<PaperProvider theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
-			<View>
-				<Text>Test</Text>
+			<View style={{ height: "100%" }}>
+				<ScrollView style={styles.scrollview}>
+					<View style={styles.events}>
+						<View
+							style={{
+								display: "flex",
+								width: "100%",
+								alignItems: "center",
+								justifyContent: "center",
+								marginTop: 20
+							}}
+						>
+							<Image
+								style={{
+									width: 96,
+									height: 96,
+									borderRadius: 25,
+									marginBottom: 15
+								}}
+								source={require("./assets/icon.png")}
+							/>
+							<Text variant="titleLarge">Eagletime</Text>
+							<Text
+								variant="titleSmall"
+								style={{
+									color: MD3DarkTheme.colors.onSurfaceVariant,
+									marginBottom: 5
+								}}
+							>
+								Insert awesome description here
+							</Text>
+							<Button
+								icon="github"
+								mode="text"
+								onPress={() => {
+									//e
+								}}
+							>
+								Github
+							</Button>
+						</View>
+						<View style={styles.line} />
+						<Text
+							variant="titleLarge"
+							style={{
+								marginBottom: 20
+							}}
+						>
+							Made by
+						</Text>
+						<GithubUser />
+					</View>
+				</ScrollView>
 			</View>
 		</PaperProvider>
+	);
+};
+
+const SettingsRoute = ({ navigation }) => {
+	const scheme = useColorScheme();
+	return (
+		<View style={{ height: "100%" }}>
+			<TopAppBar navigation={navigation} name="Settings" />
+			<ScrollView style={styles.scrollview}>
+				<View style={styles.events}>
+					<Text variant="titleLarge">Accent Color</Text>
+					<Surface style={styles.info_section}>
+						<View>
+							<Text>Insert color picker here</Text>
+							<Text>Insert color picker here</Text>
+							<Text>Insert color picker here</Text>
+						</View>
+					</Surface>
+				</View>
+			</ScrollView>
+		</View>
 	);
 };
 
@@ -893,6 +1022,21 @@ const MainScreen = () => {
 						}
 					})}
 				/>
+				<Tab.Screen
+					name="Settings"
+					component={SettingsRoute}
+					options={{
+						tabBarIcon: ({ focused, color }) => (focused ? <MaterialCommunityIcons name="cog" color={color} size={24} /> : <MaterialCommunityIcons name="cog-outline" color={color} size={24} />)
+					}}
+					listeners={() => ({
+						tabPress: (e) => {
+							Vibration.vibrate(5);
+							CalendarRoute = () => {
+								return <View />;
+							};
+						}
+					})}
+				/>
 			</Tab.Navigator>
 		</PaperProvider>
 	);
@@ -914,7 +1058,7 @@ const TopAppBar = ({ navigation, name }) => {
 	const scheme = useColorScheme();
 	const [menuVisible, setMenuVisible] = React.useState(false);
 	return (
-		<Appbar.Header mode="small" elevated="true" theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
+		<Appbar.Header mode="small" elevated="true" theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme} style={{}}>
 			<Appbar.Content title={name} titleStyle={{ marginLeft: 10, marginBottom: -10, paddingTop: 5, fontSize: 32 }} />
 			<Menu
 				visible={menuVisible}
@@ -950,7 +1094,13 @@ export default function App() {
 			<StatusBar barStyle={scheme == "light" ? "dark-content" : "light-content"} backgroundColor="#00000000" translucent={true} />
 			<Stack.Navigator
 				screenOptions={{
-					header: (props) => <TopNavBar {...props} />
+					header: (props) => <TopNavBar {...props} />,
+					presentation: "modal",
+					cardStyleInterpolator: ({ current }) => ({
+						cardStyle: {
+							opacity: current.progress
+						}
+					})
 				}}
 			>
 				<Stack.Screen name="Main" component={MainScreen} />
