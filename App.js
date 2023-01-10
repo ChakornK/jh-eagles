@@ -114,6 +114,30 @@ function generateColorPalette(color, theme) {
 		};
 	}
 }
+var accentColor, theme;
+async function reloadColorPalette() {
+	accentColor = await getData("accentColor");
+	theme = await getData("theme");
+	if (!accentColor) {
+		storeData("accentColor", "#4285F4");
+		accentColor = await getData("accentColor");
+	}
+	if (!theme) {
+		storeData("theme", "auto");
+		theme = await getData("theme");
+	}
+	generateColorPalette(accentColor, theme);
+	topBarNotThemed = true;
+	appParentNotThemed = true;
+	settingsNotThemed = true;
+	homeNotThemed = true;
+	setTimeout(() => {
+		topBarNotThemed = true;
+		appParentNotThemed = true;
+		settingsNotThemed = true;
+		homeNotThemed = true;
+	}, 500);
+}
 const storeData = async (key, value) => {
 	try {
 		await AsyncStorage.setItem(key, value);
@@ -131,7 +155,6 @@ const getData = async (key) => {
 	}
 };
 
-var accentColor, theme;
 (async function () {
 	accentColor = await getData("accentColor");
 	theme = await getData("theme");
@@ -368,8 +391,16 @@ class Weather extends Component {
 	}
 }
 
+var homeNotThemed = true;
 const HomeRoute = ({ navigation }) => {
 	const scheme = useColorScheme();
+	const [refresh, setRefresh] = React.useState(false);
+	setInterval(() => {
+		if (homeNotThemed) {
+			setRefresh(!refresh);
+			homeNotThemed = false;
+		}
+	}, 1000);
 	return (
 		<View style={{ height: "100%" }}>
 			<TopAppBar navigation={navigation} name="Home" />
@@ -1036,14 +1067,20 @@ const AboutScreen = () => {
 	);
 };
 
+var settingsNotThemed = true;
 const SettingsRoute = ({ navigation }) => {
 	const scheme = useColorScheme();
 	const [colorPicker, setColorPicker] = React.useState(false);
 	const [color, setColor] = React.useState(accentColor);
 	var tempColor;
 
-	const [snackbarVisible, setSnackbarVisible] = React.useState(false);
-
+	const [refresh, setRefresh] = React.useState(false);
+	setInterval(() => {
+		if (settingsNotThemed) {
+			setRefresh(!refresh);
+			settingsNotThemed = false;
+		}
+	}, 1000);
 	return (
 		<View style={{ height: "100%" }}>
 			<TopAppBar navigation={navigation} name="Settings" />
@@ -1146,77 +1183,52 @@ const SettingsRoute = ({ navigation }) => {
 					</TouchableRipple>
 				</View>
 			</ScrollView>
-			<Portal>
-				<Dialog dismissable={true} visible={colorPicker} onDismiss={() => setColorPicker(false)}>
-					<Dialog.Title>Choose accent color</Dialog.Title>
-					<Dialog.Content>
-						<View
-							style={{
-								height: 300
+			{/* <Portal> */}
+			<Dialog dismissable={true} visible={colorPicker} onDismiss={() => setColorPicker(false)}>
+				<Dialog.Title>Choose accent color</Dialog.Title>
+				<Dialog.Content>
+					<View
+						style={{
+							height: 300
+						}}
+					>
+						<ColorPicker
+							color={color}
+							onColorChangeComplete={(color) => {
+								tempColor = color;
 							}}
-						>
-							<ColorPicker
-								color={color}
-								onColorChangeComplete={(color) => {
-									tempColor = color;
-								}}
-							/>
-						</View>
-					</Dialog.Content>
-					<Dialog.Actions>
-						<Button
-							onPress={() => {
-								tempColor = "#4285F4";
-								setColor(tempColor);
-								storeData("accentColor", tempColor);
-								setSnackbarVisible(true);
-								setTimeout(() => {
-									setSnackbarVisible(false);
-								}, 5000);
-							}}
-						>
-							Reset
-						</Button>
-						<Button
-							onPress={() => {
-								setColorPicker(false);
-							}}
-						>
-							Cancel
-						</Button>
-						<Button
-							onPress={() => {
-								setColorPicker(false);
-								setColor(tempColor);
-								storeData("accentColor", tempColor);
-								setSnackbarVisible(true);
-								setTimeout(() => {
-									setSnackbarVisible(false);
-								}, 5000);
-							}}
-						>
-							OK
-						</Button>
-					</Dialog.Actions>
-				</Dialog>
-			</Portal>
-			<Snackbar
-				visible={snackbarVisible}
-				onDismiss={() => {
-					setSnackbarVisible(false);
-				}}
-				action={{
-					label: "Dismiss",
-					onPress: () => {
-						setSnackbarVisible(false);
-					}
-				}}
-				style={{
-					zIndex: 99999
-				}}
-			>
-				Restart the app for changes to take effect.
-			</Snackbar>
+						/>
+					</View>
+				</Dialog.Content>
+				<Dialog.Actions>
+					<Button
+						onPress={() => {
+							tempColor = "#4285F4";
+							setColor(tempColor);
+						}}
+					>
+						Reset
+					</Button>
+					<Button
+						onPress={() => {
+							setColorPicker(false);
+						}}
+					>
+						Cancel
+					</Button>
+					<Button
+						onPress={() => {
+							setColorPicker(false);
+							setColor(tempColor);
+							storeData("accentColor", tempColor);
+							reloadColorPalette();
+						}}
+					>
+						OK
+					</Button>
+				</Dialog.Actions>
+			</Dialog>
+			{/* </Portal> */}
 		</View>
 	);
 };
@@ -1305,11 +1317,15 @@ const MainScreenFunc = () => {
 	);
 };
 
+var mainScreenNotThemed = true;
 class MainScreen extends Component {
 	constructor() {
 		super();
-		setTimeout(() => {
-			this.forceUpdateState();
+		setInterval(() => {
+			if (mainScreenNotThemed) {
+				this.forceUpdateState();
+				mainScreenNotThemed = false;
+			}
 		}, 1000);
 	}
 	forceUpdateState = () => {
@@ -1336,7 +1352,7 @@ var topBarNotThemed = true;
 const TopAppBar = ({ navigation, name }) => {
 	const scheme = useColorScheme();
 	const [refresh, setRefresh] = React.useState(false);
-	setTimeout(() => {
+	setInterval(() => {
 		if (topBarNotThemed) {
 			setRefresh(!refresh);
 			topBarNotThemed = false;
@@ -1379,7 +1395,7 @@ class AppParent extends Component {
 		this.forceUpdate();
 	};
 	render() {
-		setTimeout(() => {
+		setInterval(() => {
 			if (appParentNotThemed) {
 				this.forceUpdateState();
 				appParentNotThemed = false;
