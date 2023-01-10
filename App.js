@@ -10,6 +10,7 @@ import { createMaterialBottomTabNavigator } from "@juliushuck/react-native-navig
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import HtmlText from "react-native-html-to-text-updated";
 import DatePicker from "react-native-modern-datepicker";
+import { WebView } from "react-native-webview";
 import ImageView from "react-native-image-viewing";
 import createDynamicThemeColors from "./createMaterialYouPalette.js";
 import ColorPicker from "react-native-wheel-color-picker";
@@ -391,6 +392,9 @@ class Weather extends Component {
 	}
 }
 
+var navigateToMessageView = false;
+var leaveMessageView = false;
+
 var homeNotThemed = true;
 const HomeRoute = ({ navigation }) => {
 	const scheme = useColorScheme();
@@ -401,6 +405,16 @@ const HomeRoute = ({ navigation }) => {
 			homeNotThemed = false;
 		}
 	}, 1000);
+	setInterval(() => {
+		if (navigateToMessageView) {
+			navigateToMessageView = false;
+			navigation.navigate("View Message");
+		}
+		if (leaveMessageView) {
+			leaveMessageView = false;
+			navigation.goBack();
+		}
+	});
 	return (
 		<View style={{ height: "100%" }}>
 			<TopAppBar navigation={navigation} name="Home" />
@@ -563,7 +577,7 @@ const HomeRoute = ({ navigation }) => {
 	);
 };
 
-const MessageCard = ({ time, text, attachments, index, totalIndex }) => {
+const MessageCard = ({ time, text, attachments, index, totalIndex, url }) => {
 	const scheme = useColorScheme();
 	var images = [];
 	if (attachments.length > 0) {
@@ -653,18 +667,90 @@ const MessageCard = ({ time, text, attachments, index, totalIndex }) => {
 	});
 	return (
 		<View style={styles.events}>
-			<Surface style={styles.info_section} elevation={2}>
-				<View
-					style={{
-						width: "100%"
+			<Surface style={{ ...styles.info_section, padding: 0 }} elevation={2}>
+				<TouchableRipple
+					onPress={() => {
+						navigateToMessageView = true;
+						messageUrl = url;
 					}}
+					style={{
+						borderRadius: 15,
+						overflow: "hidden",
+						width: "100%",
+						height: "100%"
+					}}
+					borderless={true}
 				>
-					<Text variant="bodySmall">{time}</Text>
-					<Text variant="titleSmall">{text}</Text>
-					{showImages}
-				</View>
+					<View
+						style={{
+							width: "100%",
+							height: "100%",
+							padding: 25
+						}}
+					>
+						<Text variant="bodySmall">{time}</Text>
+						<Text variant="titleSmall">{text}</Text>
+						{showImages}
+					</View>
+				</TouchableRipple>
 			</Surface>
 			{index == totalIndex - 1 ? <View style={{ height: 280 }} /> : null}
+		</View>
+	);
+};
+
+var messageUrl;
+var ViewMessageRoute = ({ navigation }) => {
+	const isFocused = useIsFocused();
+	const scheme = useColorScheme();
+	return (
+		<View style={{ height: "100%" }}>
+			{isFocused ? (
+				<WebView
+					originWhitelist={["*"]}
+					javaScriptEnabled={false}
+					domStorageEnabled={false}
+					startInLoadingState={true}
+					scalesPageToFit={false}
+					scrollEnabled={true}
+					forceDarkOn={scheme == "dark"}
+					source={{ uri: messageUrl }}
+					style={{
+						width: "100%",
+						height: "100%"
+					}}
+					ref={(ref) => {
+						this.webview = ref;
+					}}
+					onLoadStart={(syntheticEvent) => {
+						const { nativeEvent } = syntheticEvent;
+						if (!nativeEvent.url.includes("https://eagletime.appazur.com/m") && !nativeEvent.url.includes("https://www.surreyschools.ca/johnht")) {
+							this.webview.stopLoading();
+							this.webview.goBack();
+							Linking.openURL(nativeEvent.url);
+						}
+					}}
+					onLoad={(syntheticEvent) => {
+						const { nativeEvent } = syntheticEvent;
+						if (nativeEvent.url.endsWith(".jpg") || nativeEvent.url.endsWith(".png") || nativeEvent.url.endsWith(".bmp") || nativeEvent.url.endsWith(".gif")) {
+							this.webview.stopLoading();
+							this.webview.goBack();
+						}
+					}}
+					injectedJavaScript={`
+					(function() {
+						var links = document.links;
+						for (var i = 0; i < links.length; i++) {
+							 links[i].target = "_blank";
+						}
+						var images = document.querySelectorAll("a:has(> img)");
+						for (var i = 0; i < images.length; i++) {
+							images[i].removeAttribute("href")
+						   }
+					})()
+					`}
+				/>
+			) : null}
 		</View>
 	);
 };
@@ -702,7 +788,7 @@ class MessagesScreen extends Component {
 					style={styles.scrollview}
 					data={this.state.messageList}
 					renderItem={({ item, index }) => {
-						return <MessageCard time={item.date} text={item.text} attachments={item.atts} index={index} totalIndex={this.state.messageList.length} />;
+						return <MessageCard time={item.date} text={item.text} attachments={item.atts} index={index} totalIndex={this.state.messageList.length} url={item.url} />;
 					}}
 				/>
 				<ActivityIndicator animating={true} size={"small"} style={{ marginTop: 20 }} />
@@ -1384,6 +1470,7 @@ const App = () => {
 				<Stack.Screen name="Main" component={MainScreen} />
 				<Stack.Screen name="Bell Schedule" component={BellSchedule} />
 				<Stack.Screen name="About" component={AboutScreen} />
+				<Stack.Screen name="View Message" component={ViewMessageRoute} />
 			</Stack.Navigator>
 		</NavigationContainer>
 	);
