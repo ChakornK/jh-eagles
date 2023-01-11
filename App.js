@@ -708,9 +708,9 @@ var ViewMessageRoute = ({ navigation }) => {
 			{isFocused ? (
 				<WebView
 					originWhitelist={["*"]}
-					javaScriptEnabled={false}
+					javaScriptEnabled={true}
 					domStorageEnabled={false}
-					startInLoadingState={true}
+					startInLoadingState={false}
 					scalesPageToFit={false}
 					scrollEnabled={true}
 					forceDarkOn={scheme == "dark"}
@@ -722,21 +722,6 @@ var ViewMessageRoute = ({ navigation }) => {
 					ref={(ref) => {
 						this.webview = ref;
 					}}
-					onLoadStart={(syntheticEvent) => {
-						const { nativeEvent } = syntheticEvent;
-						if (!nativeEvent.url.includes("https://eagletime.appazur.com/m") && !nativeEvent.url.includes("https://www.surreyschools.ca/johnht")) {
-							this.webview.stopLoading();
-							this.webview.goBack();
-							Linking.openURL(nativeEvent.url);
-						}
-					}}
-					onLoad={(syntheticEvent) => {
-						const { nativeEvent } = syntheticEvent;
-						if (nativeEvent.url.endsWith(".jpg") || nativeEvent.url.endsWith(".png") || nativeEvent.url.endsWith(".bmp") || nativeEvent.url.endsWith(".gif")) {
-							this.webview.stopLoading();
-							this.webview.goBack();
-						}
-					}}
 					injectedJavaScript={`
 					(function() {
 						var links = document.links;
@@ -746,7 +731,17 @@ var ViewMessageRoute = ({ navigation }) => {
 						var images = document.querySelectorAll("a:has(> img)");
 						for (var i = 0; i < images.length; i++) {
 							images[i].removeAttribute("href")
-						   }
+						}
+						setInterval(() => {
+							var links = document.links;
+							for (var i = 0; i < links.length; i++) {
+								 links[i].target = "_blank";
+							}
+							var images = document.querySelectorAll("a:has(> img)");
+							for (var i = 0; i < images.length; i++) {
+								images[i].removeAttribute("href")
+							}
+						}, 200)
 					})()
 					`}
 				/>
