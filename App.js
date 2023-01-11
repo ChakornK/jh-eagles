@@ -3,7 +3,7 @@ import "react-native-gesture-handler";
 import * as React from "react";
 import { Component } from "react";
 import { StatusBar, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme, Image, FlatList, Pressable, PlatformColor } from "react-native";
-import { Text, Appbar, Button, MD3DarkTheme as DefaultDarkTheme, MD3LightTheme as DefaultLightTheme, Provider as PaperProvider, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog, Snackbar, Menu, BottomNavigation, TouchableRipple } from "react-native-paper";
+import { Text, Appbar, Button, MD3DarkTheme as DefaultDarkTheme, MD3LightTheme as DefaultLightTheme, Provider as PaperProvider, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog, Snackbar, Menu, BottomNavigation, TouchableRipple, RadioButton } from "react-native-paper";
 import { NavigationContainer, useIsFocused } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialBottomTabNavigator } from "@juliushuck/react-native-navigation-material-bottom-tabs";
@@ -992,7 +992,6 @@ class CalendarScreen extends Component {
 					style={{
 						zIndex: 99999
 					}}
-					theme={MD3DarkTheme}
 				>
 					Selected date is not on the calendar.
 				</Snackbar>
@@ -1155,10 +1154,13 @@ const AboutScreen = () => {
 
 var settingsNotThemed = true;
 const SettingsRoute = ({ navigation }) => {
-	const scheme = useColorScheme();
 	const [colorPicker, setColorPicker] = React.useState(false);
 	const [color, setColor] = React.useState(accentColor);
 	var tempColor;
+
+	const [colorTheme, setColorTheme] = React.useState(theme);
+
+	const [snackbarVisible, setSnackbarVisible] = React.useState(false);
 
 	const [refresh, setRefresh] = React.useState(false);
 	setInterval(() => {
@@ -1223,6 +1225,45 @@ const SettingsRoute = ({ navigation }) => {
 							/>
 						</View>
 					</TouchableRipple>
+					<View>
+						<View
+							style={{
+								display: "flex",
+								flexDirection: "row",
+								alignItems: "center",
+								justifyContent: "flex-start"
+							}}
+						>
+							<Icon icon="theme-light-dark" size={24} style={{ marginRight: 10 }} />
+							<View>
+								<Text variant="titleLarge">Theme</Text>
+								<AdaptiveText variant="titleSmall">Control the app's theme</AdaptiveText>
+							</View>
+						</View>
+						<Surface
+							style={{
+								paddingVertical: 10,
+								borderRadius: 15,
+								marginTop: 10
+							}}
+						>
+							<RadioButton.Group
+								onValueChange={(value) => {
+									setColorTheme(value);
+									setSnackbarVisible(true);
+									setTimeout(() => {
+										setSnackbarVisible(false);
+									}, 5000);
+									storeData("theme", value);
+								}}
+								value={colorTheme}
+							>
+								<RadioButton.Item style={{ paddingHorizontal: 20 }} label="System" value="auto" />
+								<RadioButton.Item style={{ paddingHorizontal: 20 }} label="Light" value="light" />
+								<RadioButton.Item style={{ paddingHorizontal: 20 }} label="Dark" value="dark" />
+							</RadioButton.Group>
+						</Surface>
+					</View>
 					<AdaptiveText
 						variant="titleSmall"
 						primaryColor={true}
@@ -1315,6 +1356,23 @@ const SettingsRoute = ({ navigation }) => {
 				</Dialog.Actions>
 			</Dialog>
 			{/* </Portal> */}
+			<Snackbar
+				visible={snackbarVisible}
+				onDismiss={() => {
+					setSnackbarVisible(false);
+				}}
+				action={{
+					label: "Dismiss",
+					onPress: () => {
+						setSnackbarVisible(false);
+					}
+				}}
+				style={{
+					zIndex: 99999
+				}}
+			>
+				Restart the app to change theme.
+			</Snackbar>
 		</View>
 	);
 };
