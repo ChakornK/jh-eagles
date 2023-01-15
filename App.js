@@ -2,8 +2,8 @@ import "react-native-gesture-handler";
 
 import * as React from "react";
 import { Component } from "react";
-import { StatusBar, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme, Image, FlatList, Pressable, PlatformColor } from "react-native";
-import { Text, Appbar, Button, MD3DarkTheme as DefaultDarkTheme, MD3LightTheme as DefaultLightTheme, Provider as PaperProvider, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog, Snackbar, Menu, BottomNavigation, TouchableRipple, RadioButton } from "react-native-paper";
+import { StatusBar, StyleSheet, View, ScrollView, Linking, Vibration, useColorScheme, Image, FlatList, Pressable } from "react-native";
+import { Text, Appbar, Button, MD3DarkTheme as DefaultDarkTheme, MD3LightTheme as DefaultLightTheme, Provider as PaperProvider, Surface, DataTable, ActivityIndicator, AnimatedFAB, Portal, Dialog, Snackbar, TouchableRipple, RadioButton, TextInput, IconButton } from "react-native-paper";
 import { NavigationContainer, useIsFocused } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialBottomTabNavigator } from "@juliushuck/react-native-navigation-material-bottom-tabs";
@@ -155,6 +155,22 @@ const getData = async (key) => {
 		return null;
 	}
 };
+const storeJsonData = async (key, value) => {
+	try {
+		await AsyncStorage.setItem(key, JSON.stringify(value));
+		return true;
+	} catch (e) {
+		return false;
+	}
+};
+const getJsonData = async (key) => {
+	try {
+		const value = await AsyncStorage.getItem(key);
+		return JSON.parse(value);
+	} catch (e) {
+		return null;
+	}
+};
 
 (async function () {
 	accentColor = await getData("accentColor");
@@ -168,6 +184,15 @@ const getData = async (key) => {
 		theme = await getData("theme");
 	}
 	generateColorPalette(accentColor, theme);
+})();
+
+var assignmentsStore;
+(async function () {
+	assignmentsStore = await getJsonData("assignments");
+	if (!assignmentsStore) {
+		storeJsonData("assignments", []);
+		assignmentsStore = [];
+	}
 })();
 
 const Tab = createMaterialBottomTabNavigator();
@@ -420,7 +445,18 @@ const HomeRoute = ({ navigation }) => {
 			<TopAppBar navigation={navigation} name="Home" />
 			<ScrollView style={styles.scrollview}>
 				<View style={styles.events}>
-					<Text variant="headlineSmall">Today</Text>
+					<View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+						<Image
+							style={{
+								width: 32,
+								height: 32,
+								borderRadius: 10,
+								marginRight: 8
+							}}
+							source={require("./assets/icon.png")}
+						/>
+						<Text variant="headlineSmall">EagleTime</Text>
+					</View>
 					<Surface style={styles.section} elevation={2}>
 						<BlockRotation />
 						<View style={styles.line} />
@@ -1024,6 +1060,234 @@ class CalendarScreen extends Component {
 	}
 }
 
+const AssignmentRoute = ({ navigation }) => {
+	const [dialogVisible, setDialogVisible] = React.useState(false);
+	const [calendarVisible, setCalendarVisible] = React.useState(false);
+
+	const [assignmentName, setAssignmentName] = React.useState("");
+	const [className, setClassName] = React.useState("");
+
+	const [assignmentNameError, setAssignmentNameError] = React.useState(false);
+	const [classNameError, setClassNameError] = React.useState(false);
+
+	var today = new Date(Date.now());
+	var formattedTodayDate = today.getMonth() + 1 + "/" + today.getDate() + "/" + today.getFullYear();
+	const [dueDate, setDueDate] = React.useState(formattedTodayDate);
+	const [notes, setNotes] = React.useState("");
+
+	const [assignments, setAssignments] = React.useState(assignmentsStore);
+	if (assignments[0]) {
+		var assignmentsList = assignments.map((data, index) => {
+			return (
+				<View style={styles.events} key={index}>
+					<Surface elevation={2} style={styles.info_section}>
+						<View
+							style={{
+								width: "100%"
+							}}
+						>
+							<View
+								style={{
+									display: "flex",
+									justifyContent: "space-between",
+									alignItems: "center",
+									flexDirection: "row"
+								}}
+							>
+								<AdaptiveText variant="titleLarge">{data.name}</AdaptiveText>
+								<IconButton
+									icon="trash-can-outline"
+									size={20}
+									onPress={() => {
+										var newList = assignments;
+										newList.splice(index, 1);
+										storeJsonData("assignments", newList);
+										setTimeout(() => {
+											setAssignments(newList);
+										});
+										setAssignments([]);
+									}}
+								/>
+							</View>
+							<AdaptiveText variant="titleSmall" style={{ marginBottom: 10 }}>
+								{data.subject}
+							</AdaptiveText>
+							<AdaptiveText variant="titleMedium">Due: {data.date}</AdaptiveText>
+							{data.comments && (
+								<View>
+									<AdaptiveText variant="titleMedium">Notes:</AdaptiveText>
+									<Surface style={styles.info_section} elevation={3}>
+										<View style={{ width: "100%" }}>
+											<AdaptiveText variant="titleSmall">{data.comments}</AdaptiveText>
+										</View>
+									</Surface>
+								</View>
+							)}
+						</View>
+					</Surface>
+				</View>
+			);
+		});
+	} else {
+		assignmentsList = (
+			<View style={{ ...styles.events, width: "100%", display: "flex", flexDirection: "column", alignContent: "center" }}>
+				<AdaptiveText variant="titleMedium" style={{ textAlign: "center" }}>
+					Nothing here...
+				</AdaptiveText>
+				<AdaptiveText variant="titleMedium" style={{ textAlign: "center" }}>
+					Click the + button the add an assignment
+				</AdaptiveText>
+			</View>
+		);
+	}
+	return (
+		<View style={{ height: "100%" }}>
+			<TopAppBar navigation={navigation} name="Assignments" />
+			<ScrollView style={styles.scrollview}>
+				{assignmentsList}
+				<View style={styles.main} />
+			</ScrollView>
+			<AnimatedFAB
+				icon={"plus"}
+				label={"Create"}
+				extended={false}
+				onPress={() => {
+					setDialogVisible(true);
+				}}
+				visible={true}
+				animateFrom={"right"}
+				iconMode={"dynamic"}
+				style={{
+					bottom: 16,
+					right: 16,
+					position: "absolute",
+					zIndex: 9999
+				}}
+			/>
+			<Portal>
+				<Dialog
+					visible={dialogVisible}
+					onDismiss={() => {
+						setDialogVisible(false);
+					}}
+					style={{
+						marginVertical: 100
+					}}
+				>
+					<Dialog.Title>Add assignment</Dialog.Title>
+					<Dialog.ScrollArea
+						style={{
+							borderColor: "#0000",
+							borderWidth: 0
+						}}
+					>
+						<ScrollView>
+							<TextInput
+								style={{
+									marginBottom: 10
+								}}
+								label="Assignment name"
+								mode="outlined"
+								error={assignmentNameError}
+								value={assignmentName}
+								onChangeText={(text) => setAssignmentName(text)}
+							/>
+							<TextInput
+								style={{
+									marginBottom: 10
+								}}
+								label="Class"
+								mode="outlined"
+								error={classNameError}
+								value={className}
+								onChangeText={(text) => setClassName(text)}
+							/>
+							<Pressable
+								onPress={() => {
+									setCalendarVisible(true);
+								}}
+							>
+								<TextInput
+									style={{
+										marginBottom: 10
+									}}
+									label="Date"
+									mode="outlined"
+									value={dueDate}
+									editable={false}
+								/>
+							</Pressable>
+							<TextInput label="Notes" mode="outlined" multiline={true} numberOfLines={5} value={notes} onChangeText={(text) => setNotes(text)} />
+						</ScrollView>
+					</Dialog.ScrollArea>
+					<Dialog.Actions>
+						<Button
+							onPress={() => {
+								setAssignmentNameError(false);
+								setClassNameError(false);
+								setAssignmentName("");
+								setClassName("");
+								setDueDate(formattedTodayDate);
+								setDialogVisible(false);
+							}}
+						>
+							Cancel
+						</Button>
+						<Button
+							onPress={() => {
+								if (!assignmentName) {
+									setAssignmentNameError(true);
+								}
+								if (!className) {
+									setClassNameError(true);
+								}
+								if (assignmentName && className) {
+									var data = {
+										name: assignmentName,
+										subject: className,
+										date: dueDate,
+										comments: notes
+									};
+									var prepareAssignmentList = assignments;
+									prepareAssignmentList.push(data);
+									storeJsonData("assignments", prepareAssignmentList);
+									setAssignmentNameError(false);
+									setClassNameError(false);
+									setAssignmentName("");
+									setClassName("");
+									setDueDate(formattedTodayDate);
+									setDialogVisible(false);
+								}
+							}}
+						>
+							Add
+						</Button>
+					</Dialog.Actions>
+				</Dialog>
+			</Portal>
+			<Portal>
+				<Dialog
+					visible={calendarVisible}
+					onDismiss={() => {
+						setCalendarVisible(false);
+					}}
+				>
+					<Dialog.Title>Pick a date</Dialog.Title>
+					<Dialog.Content>
+						<CalendarPicker
+							mode="calendar"
+							onDateChange={(date) => {
+								setDueDate(date);
+								setCalendarVisible(false);
+							}}
+						/>
+					</Dialog.Content>
+				</Dialog>
+			</Portal>
+		</View>
+	);
+};
+
 class GithubUser extends Component {
 	constructor() {
 		super();
@@ -1305,52 +1569,52 @@ const SettingsRoute = ({ navigation }) => {
 					</TouchableRipple>
 				</View>
 			</ScrollView>
-			{/* <Portal> */}
-			<Dialog dismissable={true} visible={colorPicker} onDismiss={() => setColorPicker(false)}>
-				<Dialog.Title>Choose accent color</Dialog.Title>
-				<Dialog.Content>
-					<View
-						style={{
-							height: 300
-						}}
-					>
-						<ColorPicker
-							color={color}
-							onColorChangeComplete={(color) => {
-								tempColor = color;
+			<Portal>
+				<Dialog dismissable={true} visible={colorPicker} onDismiss={() => setColorPicker(false)}>
+					<Dialog.Title>Choose accent color</Dialog.Title>
+					<Dialog.Content>
+						<View
+							style={{
+								height: 300
 							}}
-						/>
-					</View>
-				</Dialog.Content>
-				<Dialog.Actions>
-					<Button
-						onPress={() => {
-							tempColor = "#4285F4";
-							setColor(tempColor);
-						}}
-					>
-						Reset
-					</Button>
-					<Button
-						onPress={() => {
-							setColorPicker(false);
-						}}
-					>
-						Cancel
-					</Button>
-					<Button
-						onPress={() => {
-							setColorPicker(false);
-							setColor(tempColor);
-							storeData("accentColor", tempColor);
-							reloadColorPalette();
-						}}
-					>
-						OK
-					</Button>
-				</Dialog.Actions>
-			</Dialog>
-			{/* </Portal> */}
+						>
+							<ColorPicker
+								color={color}
+								onColorChangeComplete={(color) => {
+									tempColor = color;
+								}}
+							/>
+						</View>
+					</Dialog.Content>
+					<Dialog.Actions>
+						<Button
+							onPress={() => {
+								tempColor = "#4285F4";
+								setColor(tempColor);
+							}}
+						>
+							Reset
+						</Button>
+						<Button
+							onPress={() => {
+								setColorPicker(false);
+							}}
+						>
+							Cancel
+						</Button>
+						<Button
+							onPress={() => {
+								setColorPicker(false);
+								setColor(tempColor);
+								storeData("accentColor", tempColor);
+								reloadColorPalette();
+							}}
+						>
+							OK
+						</Button>
+					</Dialog.Actions>
+				</Dialog>
+			</Portal>
 			<Snackbar
 				visible={snackbarVisible}
 				onDismiss={() => {
@@ -1376,22 +1640,7 @@ const MainScreenFunc = () => {
 	const scheme = useColorScheme();
 	return (
 		<PaperProvider theme={scheme == "light" ? MD3LightTheme : MD3DarkTheme}>
-			<Tab.Navigator shifting={false}>
-				<Tab.Screen
-					name="Home"
-					component={HomeRoute}
-					options={{
-						tabBarIcon: ({ focused, color }) => (focused ? <MaterialCommunityIcons name="home" color={color} size={24} /> : <MaterialCommunityIcons name="home-outline" color={color} size={24} />)
-					}}
-					listeners={() => ({
-						tabPress: (e) => {
-							Vibration.vibrate(5);
-							CalendarRoute = () => {
-								return <View />;
-							};
-						}
-					})}
-				/>
+			<Tab.Navigator shifting={false} initialRouteName="Home" backBehavior="history">
 				<Tab.Screen
 					name="Messages"
 					component={MessagesRoute}
@@ -1432,6 +1681,36 @@ const MainScreenFunc = () => {
 										</View>
 									</View>
 								);
+							};
+						}
+					})}
+				/>
+				<Tab.Screen
+					name="Home"
+					component={HomeRoute}
+					options={{
+						tabBarIcon: ({ focused, color }) => (focused ? <MaterialCommunityIcons name="home" color={color} size={24} /> : <MaterialCommunityIcons name="home-outline" color={color} size={24} />)
+					}}
+					listeners={() => ({
+						tabPress: (e) => {
+							Vibration.vibrate(5);
+							CalendarRoute = () => {
+								return <View />;
+							};
+						}
+					})}
+				/>
+				<Tab.Screen
+					name="Assignments"
+					component={AssignmentRoute}
+					options={{
+						tabBarIcon: ({ focused, color }) => (focused ? <MaterialCommunityIcons name="clipboard-list" color={color} size={24} /> : <MaterialCommunityIcons name="clipboard-list-outline" color={color} size={24} />)
+					}}
+					listeners={() => ({
+						tabPress: (e) => {
+							Vibration.vibrate(5);
+							CalendarRoute = () => {
+								return <View />;
 							};
 						}
 					})}
