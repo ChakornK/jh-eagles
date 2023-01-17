@@ -1656,6 +1656,7 @@ const SettingsRoute = ({ navigation }) => {
 								onColorChangeComplete={(color) => {
 									tempColor = color;
 								}}
+								palette={["#000000", "#ed1c24", "#f2aa44", "#ffde17", "#57ff0a", "#00c85d", "#00ccef", "#3358e6", "#d11cd5"]}
 							/>
 						</View>
 					</Dialog.Content>
