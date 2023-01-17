@@ -1,1 +1,1 @@
-# eagletime-react-native
+# jheagles-react-native

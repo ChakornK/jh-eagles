@@ -1,7 +1,7 @@
 {
 	"expo": {
-		"name": "eagletime",
-		"slug": "eagletime",
+		"name": "JH Eagles",
+		"slug": "JH Eagles",
 		"version": "1.0.0",
 		"orientation": "portrait",
 		"icon": "./assets/icon.png",
@@ -10,7 +10,7 @@
 		"splash": {
 			"image": "./assets/splash.png",
 			"resizeMode": "contain",
-			"backgroundColor": "#ffffff"
+			"backgroundColor": "#0058a8"
 		},
 		"updates": {
 			"fallbackToCacheTimeout": 0
@@ -24,9 +24,9 @@
 			"userInterfaceStyle": "automatic",
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/adaptive-icon.png",
-				"backgroundColor": "#FFFFFF"
+				"backgroundColor": "#0058a8"
 			},
-			"package": "com.jh.eagletime"
+			"package": "com.jh.eagles"
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"

@@ -16,6 +16,8 @@ import createDynamicThemeColors from "./createMaterialYouPalette.js";
 import ColorPicker from "react-native-wheel-color-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import * as schoolMap from "./assets/schoolmap.js";
+
 const months = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."];
 const dayOfWeek = ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."];
 
@@ -131,13 +133,15 @@ async function reloadColorPalette() {
 	topBarNotThemed = true;
 	appParentNotThemed = true;
 	settingsNotThemed = true;
+	assignmentsNotThemed = true;
 	homeNotThemed = true;
 	setTimeout(() => {
 		topBarNotThemed = true;
 		appParentNotThemed = true;
 		settingsNotThemed = true;
+		assignmentsNotThemed = true;
 		homeNotThemed = true;
-	}, 500);
+	}, 1500);
 }
 const storeData = async (key, value) => {
 	try {
@@ -440,6 +444,7 @@ const HomeRoute = ({ navigation }) => {
 			navigation.goBack();
 		}
 	});
+	const [imgViewerVisible, setImgViewerVisible] = React.useState(false);
 	return (
 		<View style={{ height: "100%" }}>
 			<TopAppBar navigation={navigation} name="Home" />
@@ -455,7 +460,7 @@ const HomeRoute = ({ navigation }) => {
 							}}
 							source={require("./assets/icon.png")}
 						/>
-						<Text variant="headlineSmall">EagleTime</Text>
+						<Text variant="headlineSmall">JH Eagles</Text>
 					</View>
 					<Surface style={styles.section} elevation={2}>
 						<BlockRotation />
@@ -476,6 +481,23 @@ const HomeRoute = ({ navigation }) => {
 							}}
 						>
 							View
+						</Button>
+					</Surface>
+					<Surface style={styles.info_section} elevation={2}>
+						<MaterialCommunityIcons name="map-outline" size={24} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
+						<View style={styles.view60}>
+							<Text variant="titleMedium">School Map</Text>
+							<Text variant="bodySmall">Level 1 and Level 2</Text>
+						</View>
+						<Button
+							mode="contained"
+							onPress={() => {
+								Vibration.vibrate(5);
+								// Linking.openURL("https://eagletime.appazur.com/media/info/eagletime/map_JH_2019_.jpg_CvI94vg.png");
+								setImgViewerVisible(true);
+							}}
+						>
+							Visit
 						</Button>
 					</Surface>
 					<Surface style={styles.info_section} elevation={2}>
@@ -559,22 +581,6 @@ const HomeRoute = ({ navigation }) => {
 						</Button>
 					</Surface>
 					<Surface style={styles.info_section} elevation={2}>
-						<MaterialCommunityIcons name="map-outline" size={24} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
-						<View style={styles.view60}>
-							<Text variant="titleMedium">School Map</Text>
-							<Text variant="bodySmall">Level 1 and Level 2</Text>
-						</View>
-						<Button
-							mode="contained"
-							onPress={() => {
-								Vibration.vibrate(5);
-								Linking.openURL("https://eagletime.appazur.com/media/info/eagletime/map_JH_2019_.jpg_CvI94vg.png");
-							}}
-						>
-							Visit
-						</Button>
-					</Surface>
-					<Surface style={styles.info_section} elevation={2}>
 						<MaterialCommunityIcons name="phone-outline" size={24} color={scheme == "light" ? MD3LightTheme.colors.onSurface : MD3DarkTheme.colors.onSurface} />
 						<View style={styles.view60}>
 							<Text variant="titleMedium">Phone</Text>
@@ -609,6 +615,59 @@ const HomeRoute = ({ navigation }) => {
 				</View>
 				<View style={styles.main} />
 			</ScrollView>
+			<ImageView
+				images={[{ uri: schoolMap.mapUri }]}
+				imageIndex={0}
+				visible={imgViewerVisible}
+				onRequestClose={() => {
+					setImgViewerVisible(false);
+				}}
+				backgroundColor={scheme == "light" ? "#FFF" : "#000"}
+				HeaderComponent={() => {
+					return (
+						<View
+							style={{
+								padding: 15,
+								paddingTop: 25,
+								display: "flex",
+								flexDirection: "row",
+								alignItems: "center",
+								justifyContent: "space-between",
+								backgroundColor: scheme == "light" ? "#FFFA" : "#000A"
+							}}
+						>
+							<View
+								style={{
+									flexDirection: "row",
+									alignItems: "center"
+								}}
+							>
+								<Pressable
+									onPress={() => {
+										setImgViewerVisible(false);
+									}}
+									style={{
+										marginRight: 10
+									}}
+								>
+									<Icon icon="window-close" size={24} />
+								</Pressable>
+								<Text>School map</Text>
+							</View>
+							{/* <Pressable
+								onPress={() => {
+									Linking.openURL(a.url);
+								}}
+								style={{
+									marginLeft: 10
+								}}
+							>
+								<Icon icon="open-in-app" size={24} />
+							</Pressable> */}
+						</View>
+					);
+				}}
+			/>
 		</View>
 	);
 };
@@ -1060,7 +1119,15 @@ class CalendarScreen extends Component {
 	}
 }
 
+var assignmentsNotThemed = true;
 const AssignmentRoute = ({ navigation }) => {
+	const [refresh, setRefresh] = React.useState(false);
+	setInterval(() => {
+		if (assignmentsNotThemed) {
+			setRefresh(!refresh);
+			assignmentsNotThemed = false;
+		}
+	}, 1000);
 	const [dialogVisible, setDialogVisible] = React.useState(false);
 	const [calendarVisible, setCalendarVisible] = React.useState(false);
 
@@ -1227,6 +1294,7 @@ const AssignmentRoute = ({ navigation }) => {
 								setClassNameError(false);
 								setAssignmentName("");
 								setClassName("");
+								setNotes("");
 								setDueDate(formattedTodayDate);
 								setDialogVisible(false);
 							}}
@@ -1237,9 +1305,13 @@ const AssignmentRoute = ({ navigation }) => {
 							onPress={() => {
 								if (!assignmentName) {
 									setAssignmentNameError(true);
+								} else {
+									setAssignmentNameError(false);
 								}
 								if (!className) {
 									setClassNameError(true);
+								} else {
+									setClassNameError(false);
 								}
 								if (assignmentName && className) {
 									var data = {
@@ -1255,6 +1327,7 @@ const AssignmentRoute = ({ navigation }) => {
 									setClassNameError(false);
 									setAssignmentName("");
 									setClassName("");
+									setNotes("");
 									setDueDate(formattedTodayDate);
 									setDialogVisible(false);
 								}
@@ -1375,20 +1448,20 @@ const AboutScreen = () => {
 								}}
 								source={require("./assets/icon.png")}
 							/>
-							<Text variant="titleLarge">Eagletime</Text>
+							<Text variant="titleLarge">JH Eagles</Text>
 							<AdaptiveText
 								variant="titleSmall"
 								style={{
 									marginBottom: 5
 								}}
 							>
-								Insert awesome description here
+								A redesigned version of the EagleTime app
 							</AdaptiveText>
 							<Button
 								icon="github"
 								mode="text"
 								onPress={() => {
-									Linking.openURL("https://github.com/chakornk/eagletime-react-native");
+									Linking.openURL("https://github.com/chakornk/jheagles-react-native");
 								}}
 							>
 								Github
