@@ -1119,6 +1119,16 @@ class CalendarScreen extends Component {
 	}
 }
 
+function sortAssignments(a, b) {
+	if (a.date < b.date) {
+		return -1;
+	}
+	if (a.date > b.date) {
+		return 1;
+	}
+	return 0;
+}
+
 var assignmentsNotThemed = true;
 const AssignmentRoute = ({ navigation }) => {
 	const [refresh, setRefresh] = React.useState(false);
@@ -1138,11 +1148,11 @@ const AssignmentRoute = ({ navigation }) => {
 	const [classNameError, setClassNameError] = React.useState(false);
 
 	var today = new Date(Date.now());
-	var formattedTodayDate = today.getMonth() + 1 + "/" + today.getDate() + "/" + today.getFullYear();
+	var formattedTodayDate = today.getFullYear() + "/" + today.getMonth() + 1 + "/" + today.getDate();
 	const [dueDate, setDueDate] = React.useState(formattedTodayDate);
 	const [notes, setNotes] = React.useState("");
 
-	const [assignments, setAssignments] = React.useState(assignmentsStore);
+	const [assignments, setAssignments] = React.useState(assignmentsStore.sort(sortAssignments));
 	if (assignments[0]) {
 		var assignmentsList = assignments.map((data, index) => {
 			return (
@@ -1322,6 +1332,7 @@ const AssignmentRoute = ({ navigation }) => {
 									};
 									var prepareAssignmentList = assignments;
 									prepareAssignmentList.push(data);
+									prepareAssignmentList.sort(sortAssignments);
 									storeJsonData("assignments", prepareAssignmentList);
 									setAssignmentNameError(false);
 									setClassNameError(false);
