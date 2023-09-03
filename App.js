@@ -233,50 +233,50 @@ const BellSchedule = () => {
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>First Block</DataTable.Cell>
-							<DataTable.Cell>8:30 - 9:50am</DataTable.Cell>
+							<DataTable.Cell>8:30am - 9:50am</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Second Block</DataTable.Cell>
-							<DataTable.Cell>9:55 - 11:20am</DataTable.Cell>
+							<DataTable.Cell>9:55am - 11:15am</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Lunch Break</DataTable.Cell>
-							<DataTable.Cell>11:20 - 12:00pm</DataTable.Cell>
+							<DataTable.Cell>11:15am - 12:55pm</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Third Block</DataTable.Cell>
-							<DataTable.Cell>12:05 - 1:30pm</DataTable.Cell>
+							<DataTable.Cell>12:00pm - 1:20pm</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Fourth Block</DataTable.Cell>
-							<DataTable.Cell>1:35 - 2:55pm</DataTable.Cell>
+							<DataTable.Cell>1:25pm - 2:45pm</DataTable.Cell>
 						</DataTable.Row>
 					</DataTable>
 					<Text variant="titleLarge">Tuesday Late Start</Text>
 					<DataTable style={{ marginBottom: 50 }}>
 						<DataTable.Row>
 							<DataTable.Cell>Warning Bell</DataTable.Cell>
-							<DataTable.Cell>9:15 am</DataTable.Cell>
+							<DataTable.Cell>9:10am</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>First Block</DataTable.Cell>
-							<DataTable.Cell>9:20 - 10:30am</DataTable.Cell>
+							<DataTable.Cell>9:15am - 10:25am</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Second Block</DataTable.Cell>
-							<DataTable.Cell>10:35 - 11:45am</DataTable.Cell>
+							<DataTable.Cell>10:30am - 11:40am</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Lunch Break</DataTable.Cell>
-							<DataTable.Cell>11:45 - 12:25pm</DataTable.Cell>
+							<DataTable.Cell>11:40am - 12:15pm</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Third Block</DataTable.Cell>
-							<DataTable.Cell>12:30 - 1:40pm</DataTable.Cell>
+							<DataTable.Cell>12:20pm - 1:30pm</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Fourth Block</DataTable.Cell>
-							<DataTable.Cell>1:45 - 2:55pm</DataTable.Cell>
+							<DataTable.Cell>1:35pm - 2:45pm</DataTable.Cell>
 						</DataTable.Row>
 					</DataTable>
 
@@ -284,27 +284,27 @@ const BellSchedule = () => {
 					<DataTable style={{ marginBottom: 50 }}>
 						<DataTable.Row>
 							<DataTable.Cell>Warning Bell</DataTable.Cell>
-							<DataTable.Cell>8:25 am</DataTable.Cell>
+							<DataTable.Cell>8:25am</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>First Block</DataTable.Cell>
-							<DataTable.Cell>8:30 - 9:40am</DataTable.Cell>
+							<DataTable.Cell>8:30am - 9:35am</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Second Block</DataTable.Cell>
-							<DataTable.Cell>9:45 - 10:55am</DataTable.Cell>
+							<DataTable.Cell>9:40am - 10:45am</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Lunch Break</DataTable.Cell>
-							<DataTable.Cell>10:55 - 11:35pm</DataTable.Cell>
+							<DataTable.Cell>10:45am - 11:25pm</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Third Block</DataTable.Cell>
-							<DataTable.Cell>11:40 - 12:50pm</DataTable.Cell>
+							<DataTable.Cell>11:30am - 12:35pm</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Fourth Block</DataTable.Cell>
-							<DataTable.Cell>12:55 - 2:05pm</DataTable.Cell>
+							<DataTable.Cell>12:40pm - 2:45pm</DataTable.Cell>
 						</DataTable.Row>
 					</DataTable>
 
