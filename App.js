@@ -1148,7 +1148,7 @@ const AssignmentRoute = ({ navigation }) => {
 	const [classNameError, setClassNameError] = React.useState(false);
 
 	var today = new Date(Date.now());
-	var formattedTodayDate = today.getFullYear() + "/" + today.getMonth() + 1 + "/" + today.getDate();
+	var formattedTodayDate = today.getFullYear() + "/" + (today.getMonth() + 1) + "/" + today.getDate();
 	const [dueDate, setDueDate] = React.useState(formattedTodayDate);
 	const [notes, setNotes] = React.useState("");
 
