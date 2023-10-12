@@ -241,7 +241,7 @@ const BellSchedule = () => {
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Lunch Break</DataTable.Cell>
-							<DataTable.Cell>11:15am - 12:55pm</DataTable.Cell>
+							<DataTable.Cell>11:15am - 11:55pm</DataTable.Cell>
 						</DataTable.Row>
 						<DataTable.Row>
 							<DataTable.Cell>Third Block</DataTable.Cell>
