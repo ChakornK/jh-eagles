@@ -497,7 +497,7 @@ const HomeRoute = ({ navigation }) => {
 								setImgViewerVisible(true);
 							}}
 						>
-							Visit
+							View
 						</Button>
 					</Surface>
 					<Surface style={styles.info_section} elevation={2}>
@@ -593,7 +593,7 @@ const HomeRoute = ({ navigation }) => {
 								Linking.openURL("tel:+16045815500");
 							}}
 						>
-							Visit
+							Call
 						</Button>
 					</Surface>
 					<Surface style={styles.info_section} elevation={2}>
@@ -609,7 +609,7 @@ const HomeRoute = ({ navigation }) => {
 								Linking.openURL("https://goo.gl/maps/K8cF7KdCun4r6RV89");
 							}}
 						>
-							Visit
+							View
 						</Button>
 					</Surface>
 				</View>
