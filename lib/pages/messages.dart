@@ -175,31 +175,38 @@ class _MessagesPageState extends State<MessagesPage> {
                                                                                       initialUrlRequest: URLRequest(url: WebUri(e.url.toString())),
                                                                                       initialUserScripts: UnmodifiableListView([
                                                                                         UserScript(source: """
-																								const customStyle = document.createElement('style');
-																								customStyle.innerHTML = `
-																									body {
-																										background: #${Theme.of(context).colorScheme.surface.value.toRadixString(16).substring(2)} !important;
-																										color: #${Theme.of(context).colorScheme.onSurface.value.toRadixString(16).substring(2)} !important;
+																								const themeInterval = setInterval(() => {
+																									if (document.getElementById('customStyle')) {
+																										clearInterval(themeInterval);
+																										return;
 																									}
-																									* {
-																										max-width: ${MediaQuery.of(context).size.width}px;
-																										height: auto;
-																									}
-																									p, p * {
-																										color: #${Theme.of(context).colorScheme.onSurface.value.toRadixString(16).substring(2)} !important;
-																									}
-																									a, a * {
-																										color: #${Theme.of(context).colorScheme.primary.value.toRadixString(16).substring(2)} !important;
-																									}
-																									span {
-																										background: none !important;
-																									}
-																									table {
-																										background: #${Theme.of(context).colorScheme.surface.value.toRadixString(16).substring(2)} !important;
-																									}
-																								`;
-																								document.body.appendChild(customStyle);
-																								""", injectionTime: UserScriptInjectionTime.AT_DOCUMENT_END)
+																									const customStyle = document.createElement('style');
+																									customStyle.id = 'customStyle';
+																									customStyle.innerHTML = `
+																										body {
+																											background: #${Theme.of(context).colorScheme.surface.value.toRadixString(16).substring(2)} !important;
+																											color: #${Theme.of(context).colorScheme.onSurface.value.toRadixString(16).substring(2)} !important;
+																										}
+																										* {
+																											max-width: ${MediaQuery.of(context).size.width}px;
+																											height: auto;
+																										}
+																										p, p * {
+																											color: #${Theme.of(context).colorScheme.onSurface.value.toRadixString(16).substring(2)} !important;
+																										}
+																										a, a * {
+																											color: #${Theme.of(context).colorScheme.primary.value.toRadixString(16).substring(2)} !important;
+																										}
+																										span {
+																											background: none !important;
+																										}
+																										table {
+																											background: #${Theme.of(context).colorScheme.surface.value.toRadixString(16).substring(2)} !important;
+																										}
+																									`;
+																									document.body.appendChild(customStyle);
+																								}, 20)
+																								""", injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START)
                                                                                       ]),
                                                                                       shouldOverrideUrlLoading: (controller, navigationAction) async {
                                                                                         var uri = navigationAction.request.url!;
