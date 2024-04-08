@@ -116,7 +116,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                                     child: Image.network(
                                                       e.atts[0]["url"].toString(),
                                                       width: MediaQuery.of(context).size.width,
-                                                      height: (MediaQuery.of(context).size.width / (e.atts[0]["x"]) * e.atts[0]["y"]).floorToDouble(),
+                                                      height: (MediaQuery.of(context).size.width / e.atts[0]["x"] * (e.atts[0]["y"] - 64)).floorToDouble(),
                                                       fit: BoxFit.cover,
                                                     ),
                                                   );
