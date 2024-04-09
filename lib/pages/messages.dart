@@ -99,6 +99,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: snapshot.data!
                                       .map((e) => Card(
+                                          shadowColor: Color(0x00FFFFFF),
                                           margin: EdgeInsets.fromLTRB(0, 0, 0, 16),
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                           elevation: 2,
