@@ -71,7 +71,10 @@ class AppContainer extends State<StatefulApp> {
           ],
         ),
         body: SafeArea(
-          child: <Widget>[HomePage(), MessagesPage(), CalendarPage()][currentPageIndex],
+          child: IndexedStack(
+            index: currentPageIndex,
+            children: [HomePage(), MessagesPage(), CalendarPage()],
+          ),
         ));
   }
 }
