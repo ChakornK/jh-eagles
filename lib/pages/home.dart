@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeData {
   String blockRotation;
@@ -31,6 +33,8 @@ class _HomePageState extends State<HomePage> {
       return HomeData(blockRotation: "N/A");
     }
   }
+
+  final browser = ChromeSafariBrowser();
 
   @override
   void initState() {
@@ -150,14 +154,15 @@ class _HomePageState extends State<HomePage> {
                               "index": 8,
                               "title": "Email",
                               "subtitle": "Email Johnston Heights",
-                              "link": "https://eagletime.appazur.com/m/send/?email=johnstonheights%40surreyschools.ca",
+                              //   "link": "https://eagletime.appazur.com/m/send/?email=johnstonheights%40surreyschools.ca",
+                              "link": "mailto:johnstonheights@surreyschools.ca",
                               "icon": Icons.email_outlined
                             },
                             {
                               "index": 9,
                               "title": "Map / Directions",
                               "subtitle": "15350 - 99th Avenue, Surrey, BC V3R 0R9",
-                              "link": "https://maps.google.com/maps?q=15350+-+99th+Avenue%2C+Surrey%2C+BC+V3R+0R9",
+                              "link": "https://goo.gl/maps/K8cF7KdCun4r6RV89",
                               "icon": Icons.map_outlined
                             },
                             {
@@ -191,7 +196,19 @@ class _HomePageState extends State<HomePage> {
                                             )
                                           : Container(),
                                       InkWell(
-                                          onTap: () {},
+                                          onTap: () async {
+                                            var uri = WebUri(e["link"] as String);
+
+                                            if (!["http", "https", "file", "chrome", "data", "javascript", "about"].contains(uri.scheme)) {
+                                              if (await canLaunchUrl(uri)) {
+                                                await launchUrl(
+                                                  uri,
+                                                );
+                                              }
+                                            } else {
+                                              await browser.open(url: uri);
+                                            }
+                                          },
                                           child: Padding(
                                             padding: const EdgeInsets.all(16.0),
                                             child: Row(children: [
