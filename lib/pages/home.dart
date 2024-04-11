@@ -105,21 +105,21 @@ class _HomePageState extends State<HomePage> {
                               "title": "Website",
                               "subtitle": "surreyschools.ca/johnht",
                               "link": "https://www.surreyschools.ca/johnht/",
-                              "icon": Icons.home_outlined
+                              "icon": Icons.public_outlined
                             },
                             {
                               "index": 1,
                               "title": "MyEdBC",
                               "subtitle": "Check grades, schedule, and view report cards",
                               "link": "https://myeducation.gov.bc.ca/aspen/logon.do",
-                              "icon": Icons.account_box_outlined
+                              "icon": Icons.school_outlined
                             },
                             {
                               "index": 2,
                               "title": "School Cash Online",
                               "subtitle": "Pay school fees",
                               "link": "https://www.schoolcashonline.com/",
-                              "icon": Icons.monetization_on_outlined
+                              "icon": Icons.payments_outlined
                             },
                             {
                               "index": 3,
@@ -162,28 +162,28 @@ class _HomePageState extends State<HomePage> {
                               "title": "Map / Directions",
                               "subtitle": "15350 - 99th Avenue, Surrey, BC V3R 0R9",
                               "link": "https://goo.gl/maps/K8cF7KdCun4r6RV89",
-                              "icon": Icons.map_outlined
+                              "icon": Icons.place_outlined
                             },
                             {
                               "index": 10,
                               "title": "Student Accident Insurance",
                               "subtitle": "How to purchase student accident insurance",
                               "link": "https://eagletime.appazur.com/media/info/eagletime/2021-2022_Student_Accident_-_newsletter_schools_wording_937zRqp.pdf",
-                              "icon": Icons.local_hospital_outlined
+                              "icon": Icons.medical_services_outlined
                             },
                             {
                               "index": 11,
                               "title": "Insure My Kids",
                               "subtitle": "",
                               "link": "https://insuremykids.com/",
-                              "icon": Icons.local_hospital_outlined
+                              "icon": Icons.medical_services_outlined
                             },
                             {
                               "index": 12,
                               "title": "StudyInsured Student Accident Insurance",
                               "subtitle": "",
                               "link": "https://www.studyinsuredstudentaccident.com/",
-                              "icon": Icons.local_hospital_outlined
+                              "icon": Icons.medical_services_outlined
                             },
                           ]
                               .map((e) => (Column(
