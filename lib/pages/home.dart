@@ -82,18 +82,18 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints viewportConstraints) {
+      print(MediaQuery.sizeOf(context).width);
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+            padding: const EdgeInsets.all(16.0),
+            child: Flex(direction: MediaQuery.sizeOf(context).width > 600 ? Axis.horizontal : Axis.vertical, children: [
               Card(
                 shadowColor: Color(0x00FFFFFF),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: MediaQuery.sizeOf(context).width > 600 ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+                    mainAxisAlignment: MediaQuery.sizeOf(context).width > 600 ? MainAxisAlignment.center : MainAxisAlignment.start,
                     children: [
                       Text(
                         "${["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][DateTime.now().weekday - 1]} ${[
@@ -130,34 +130,44 @@ class _HomePageState extends State<HomePage> {
                       FutureBuilder<HomeData>(
                           future: futureData,
                           builder: (context, snapshot) {
-                            return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                              Icon(
-                                weatherIcons[snapshot.data?.weather["icon"].toString() ?? "unknown"],
-                              ),
-                              SizedBox(width: 12),
-                              //   Column(
-                              //     crossAxisAlignment: CrossAxisAlignment.start,
-                              //     children: [
-                              Text(
-                                snapshot.data?.weather["condition"].toString() ?? "N/A",
-                                textScaler: TextScaler.linear(1.35),
-                              ),
-                              SizedBox(width: 6),
-                              Text("•", textScaler: TextScaler.linear(1.35)),
-                              SizedBox(width: 6),
-                              Text(
-                                snapshot.data?.weather["temperature"].toString() ?? "N/A",
-                                textScaler: TextScaler.linear(1.35),
-                              ),
-                              //     ],
-                              //   ),
-                            ]);
+                            if (MediaQuery.sizeOf(context).width > 600) {
+                              return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                Icon(
+                                  weatherIcons[snapshot.data?.weather["icon"].toString() ?? "unknown"],
+                                ),
+                                Text(
+                                  snapshot.data?.weather["condition"].toString() ?? "N/A",
+                                  textScaler: TextScaler.linear(1.35),
+                                ),
+                                Text(
+                                  snapshot.data?.weather["temperature"].toString() ?? "N/A",
+                                  textScaler: TextScaler.linear(1.35),
+                                ),
+                              ]);
+                            } else {
+                              return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                Icon(
+                                  weatherIcons[snapshot.data?.weather["icon"].toString() ?? "unknown"],
+                                ),
+                                SizedBox(width: 12),
+                                Text(
+                                  snapshot.data?.weather["condition"].toString() ?? "N/A",
+                                  textScaler: TextScaler.linear(1.35),
+                                ),
+                                SizedBox(width: 6),
+                                Text("•", textScaler: TextScaler.linear(1.35)),
+                                SizedBox(width: 6),
+                                Text(
+                                  snapshot.data?.weather["temperature"].toString() ?? "N/A",
+                                  textScaler: TextScaler.linear(1.35),
+                                ),
+                              ]);
+                            }
                           })
                     ],
                   ),
                 ),
               ),
-              SizedBox(height: 8),
               Expanded(
                   child: Card(
                       clipBehavior: Clip.antiAlias,
@@ -295,9 +305,7 @@ class _HomePageState extends State<HomePage> {
                               .toList(),
                         ),
                       ))),
-            ],
-          ),
-        ),
+            ])),
       );
     });
   }
