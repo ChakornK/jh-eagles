@@ -4,14 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:weather_icons/weather_icons.dart';
 
 class HomeData {
   String blockRotation;
+  Map<String, String> weather;
 
-  HomeData({required this.blockRotation});
+  HomeData({required this.blockRotation, required this.weather});
 
   factory HomeData.fromJson(Map<String, dynamic> json) {
-    return HomeData(blockRotation: json['name'].toString());
+    return HomeData(blockRotation: json["blockRotation"].toString(), weather: json["weather"]);
   }
 }
 
@@ -20,18 +22,53 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+final weatherIcons = {
+  // Day icons
+  "01d": WeatherIcons.day_sunny,
+  "02d": WeatherIcons.day_cloudy,
+  "03d": WeatherIcons.cloud,
+  "04d": WeatherIcons.cloudy,
+  "09d": WeatherIcons.showers,
+  "10d": WeatherIcons.rain,
+  "11d": WeatherIcons.thunderstorm,
+  "13d": WeatherIcons.snow,
+  "50d": WeatherIcons.fog,
+
+  // Night icons
+  "01n": WeatherIcons.night_clear,
+  "02n": WeatherIcons.night_alt_cloudy,
+  "03n": WeatherIcons.cloud,
+  "04n": WeatherIcons.cloudy,
+  "09n": WeatherIcons.showers,
+  "10n": WeatherIcons.rain,
+  "11n": WeatherIcons.thunderstorm,
+  "13n": WeatherIcons.snow,
+  "50n": WeatherIcons.fog,
+
+  // others
+  "unknown": Icons.question_mark_rounded
+};
+
 class _HomePageState extends State<HomePage> {
   late Future<HomeData> futureData;
 
   Future<HomeData> fetchData() async {
-    final response = await http.get(Uri.parse("https://eagletime.vercel.app/block"));
+    final blockRotation = await http.get(Uri.parse("https://eagletime.vercel.app/block"));
+    final weather = await http.get(Uri.parse("https://eagletime.vercel.app/weather"));
 
-    if (response.statusCode == 200 && response.body.isNotEmpty) {
-      var lst = jsonDecode(response.body) as List;
-      return HomeData.fromJson(lst[0]);
-    } else {
-      return HomeData(blockRotation: "N/A");
+    var b = "N/A";
+    if (blockRotation.statusCode == 200 && blockRotation.body.isNotEmpty) {
+      var lst = jsonDecode(blockRotation.body) as List;
+      b = lst[0]["name"];
     }
+    var w = {"condition": "N/A", "icon": "unknown", "temperature": "N/A"};
+    if (weather.statusCode == 200 && weather.body.isNotEmpty) {
+      var json = jsonDecode(weather.body) as Map<String, dynamic>;
+      w["condition"] = json["weather"][0]["main"].toString();
+      w["icon"] = json["weather"][0]["icon"].toString();
+      w["temperature"] = "${json["main"]["temp"].round().toString()}°C";
+    }
+    return HomeData.fromJson({"blockRotation": b, "weather": w});
   }
 
   final browser = ChromeSafariBrowser();
@@ -73,7 +110,7 @@ class _HomePageState extends State<HomePage> {
                           "November",
                           "December"
                         ][DateTime.now().month - 1]} ${DateTime.now().day}, ${DateTime.now().year}",
-                        textScaler: TextScaler.linear(1.2),
+                        textScaler: TextScaler.linear(1.25),
                       ),
                       FutureBuilder<HomeData>(
                           future: futureData,
@@ -82,10 +119,37 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 Text(
                                   (snapshot.data?.blockRotation.toString() ?? "N/A"),
-                                  textScaler: TextScaler.linear(1.7),
+                                  textScaler: TextScaler.linear(1.75),
                                 ),
                               ],
                             );
+                          }),
+                      Divider(),
+                      FutureBuilder<HomeData>(
+                          future: futureData,
+                          builder: (context, snapshot) {
+                            return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                              Icon(
+                                weatherIcons[snapshot.data?.weather["icon"].toString() ?? "unknown"],
+                              ),
+                              SizedBox(width: 12),
+                              //   Column(
+                              //     crossAxisAlignment: CrossAxisAlignment.start,
+                              //     children: [
+                              Text(
+                                snapshot.data?.weather["condition"].toString() ?? "N/A",
+                                textScaler: TextScaler.linear(1.35),
+                              ),
+                              SizedBox(width: 6),
+                              Text("•", textScaler: TextScaler.linear(1.35)),
+                              SizedBox(width: 6),
+                              Text(
+                                snapshot.data?.weather["temperature"].toString() ?? "N/A",
+                                textScaler: TextScaler.linear(1.35),
+                              ),
+                              //     ],
+                              //   ),
+                            ]);
                           })
                     ],
                   ),
