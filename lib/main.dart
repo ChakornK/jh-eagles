@@ -1,5 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:jh_eagles/components/indexedstackslider.dart';
 import 'package:jh_eagles/pages/calendar.dart';
 import 'package:jh_eagles/pages/messages.dart';
 import 'package:provider/provider.dart';
@@ -71,7 +72,8 @@ class AppContainer extends State<StatefulApp> {
           ],
         ),
         body: SafeArea(
-          child: IndexedStack(
+          child: AnimatedIndexedStack(
+            key: Key("e"),
             index: currentPageIndex,
             children: [HomePage(), MessagesPage(), CalendarPage()],
           ),
