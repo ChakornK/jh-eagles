@@ -124,7 +124,9 @@ class _HomePageState extends State<HomePage> {
                               ],
                             );
                           }),
-                      Divider(),
+                      Divider(
+                        height: 24,
+                      ),
                       FutureBuilder<HomeData>(
                           future: futureData,
                           builder: (context, snapshot) {
