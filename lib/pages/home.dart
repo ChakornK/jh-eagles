@@ -110,14 +110,14 @@ class _HomePageState extends State<HomePage> {
                             {
                               "index": 1,
                               "title": "MyEdBC",
-                              "subtitle": "Portal",
+                              "subtitle": "Check grades, schedule, and view report cards",
                               "link": "https://myeducation.gov.bc.ca/aspen/logon.do",
                               "icon": Icons.account_box_outlined
                             },
                             {
                               "index": 2,
-                              "title": "Pay School Fees",
-                              "subtitle": "School Cash Online website",
+                              "title": "School Cash Online",
+                              "subtitle": "Pay school fees",
                               "link": "https://www.schoolcashonline.com/",
                               "icon": Icons.monetization_on_outlined
                             },
@@ -153,8 +153,7 @@ class _HomePageState extends State<HomePage> {
                             {
                               "index": 8,
                               "title": "Email",
-                              "subtitle": "Email Johnston Heights",
-                              //   "link": "https://eagletime.appazur.com/m/send/?email=johnstonheights%40surreyschools.ca",
+                              "subtitle": "johnstonheights@surreyschools.ca",
                               "link": "mailto:johnstonheights@surreyschools.ca",
                               "icon": Icons.email_outlined
                             },
