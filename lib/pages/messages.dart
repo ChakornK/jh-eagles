@@ -221,8 +221,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                                                                             );
                                                                                           }
                                                                                         } else {
-                                                                                          await browser.open(url: uri);
-                                                                                          // ignore: use_build_context_synchronously
+                                                                                          browser.open(url: uri);
                                                                                           Navigator.pop(context);
                                                                                         }
                                                                                         return NavigationActionPolicy.CANCEL;
