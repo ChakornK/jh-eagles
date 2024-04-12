@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class Message {
   int sid;
@@ -114,12 +115,11 @@ class _MessagesPageState extends State<MessagesPage> {
                                                         topRight: Radius.circular(8),
                                                         bottomLeft: Radius.circular(4),
                                                         bottomRight: Radius.circular(4)),
-                                                    child: Image.network(
-                                                      e.atts[0]["url"].toString(),
-                                                      width: MediaQuery.of(context).size.width,
-                                                      height: (MediaQuery.of(context).size.width / e.atts[0]["x"] * (e.atts[0]["y"] - 64)).floorToDouble(),
-                                                      fit: BoxFit.cover,
-                                                    ),
+                                                    child: CachedNetworkImage(
+                                                        imageUrl: e.atts[0]["url"],
+                                                        width: MediaQuery.of(context).size.width,
+                                                        height: (MediaQuery.of(context).size.width / e.atts[0]["x"] * (e.atts[0]["y"] - 64)).floorToDouble(),
+                                                        fit: BoxFit.cover),
                                                   );
                                                 } else {
                                                   return Container();
