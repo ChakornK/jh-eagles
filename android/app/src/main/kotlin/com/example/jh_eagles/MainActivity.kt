@@ -1,4 +1,4 @@
-package com.example.jh_eagles
+package com.chakornk.jh_eagles
 
 import io.flutter.embedding.android.FlutterActivity
 
