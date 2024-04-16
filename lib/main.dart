@@ -8,11 +8,11 @@ import 'package:provider/provider.dart';
 import 'package:jh_eagles/pages/home.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MainScreen());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MainScreen extends StatelessWidget {
+  const MainScreen({super.key});
 
   static final _defaultLightColorScheme = ColorScheme.fromSwatch(primarySwatch: Colors.blue);
   static final _defaultDarkColorScheme = ColorScheme.fromSwatch(primarySwatch: Colors.blue, brightness: Brightness.dark);
