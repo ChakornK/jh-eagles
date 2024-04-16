@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" stroke="black" stroke-width="3"
-    stroke-miterlimit="10">
+    stroke-miterlimit="10" stroke-linecap="round">
     <g>
         <path class="st0" d="M39.98,75.042c0.21-1.217,0.761-1.862,1.641-2.615c2.243-1.918,10.762-2.145,17.174-1.89
 	c0.811,0.032,0.832,1.229,0.023,1.3c-4.311,0.377-7.807,0.014-11.592,1.635c-2.496,1.069-4.032,2.492-3.565,4.374
