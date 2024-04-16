@@ -92,7 +92,7 @@
                     android:valueType="floatType">
                     <aapt:attr name="android:interpolator">
                         <pathInterpolator
-                            android:pathData="M 0.0,0.0 c0.732,-0.076 0.248,0.98 1.0,1.0" />
+                            android:pathData="M 0.0,0.0 c0.729,0.03 0.248,0.98 1.0,1.0" />
                     </aapt:attr>
                 </objectAnimator>
                 <objectAnimator android:propertyName="trimPathEnd" android:duration="734"
@@ -100,7 +100,7 @@
                     android:valueType="floatType">
                     <aapt:attr name="android:interpolator">
                         <pathInterpolator
-                            android:pathData="M 0.0,0.0 c0.732,-0.076 0.248,0.98 1.0,1.0" />
+                            android:pathData="M 0.0,0.0 c0.729,0.03 0.248,0.98 1.0,1.0" />
                     </aapt:attr>
                 </objectAnimator>
             </set>
