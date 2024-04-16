@@ -32,15 +32,16 @@ class Message {
 
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
-        sid: json['sid'],
-        timestamp: json['timestamp'],
-        date: json['date'].toString(),
-        fname: json['fname'].toString(),
-        notify: json['notify'],
-        icon: json['icon'].toString(),
-        url: json['url'].toString(),
-        text: json['text'].toString(),
-        atts: json['atts']);
+      sid: json['sid'] ?? 0,
+      timestamp: json['timestamp'] ?? 0,
+      date: json['date']?.toString() ?? "",
+      fname: json['fname']?.toString() ?? "",
+      notify: json['notify'] ?? 0,
+      icon: json['icon']?.toString() ?? "",
+      url: json['url']?.toString() ?? "",
+      text: json['text']?.toString() ?? "",
+      atts: json['atts'] ?? [],
+    );
   }
 }
 
@@ -90,93 +91,91 @@ class _MessagesPageState extends State<MessagesPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Column(
-                        children: [
-                          FutureBuilder<List<Message>>(
-                            future: futureMessages,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: snapshot.data!
-                                      .map((e) => Card(
-                                          shadowColor: Color(0x00FFFFFF),
-                                          margin: EdgeInsets.fromLTRB(0, 0, 0, 16),
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                          elevation: 2,
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Builder(builder: (context) {
-                                                if (e.atts.isNotEmpty) {
-                                                  return ClipRRect(
-                                                    borderRadius: BorderRadius.only(
-                                                        topLeft: Radius.circular(8),
-                                                        topRight: Radius.circular(8),
-                                                        bottomLeft: Radius.circular(4),
-                                                        bottomRight: Radius.circular(4)),
-                                                    child: CachedNetworkImage(
-                                                        imageUrl: e.atts[0]["url"],
-                                                        width: MediaQuery.of(context).size.width,
-                                                        height: (MediaQuery.of(context).size.width / e.atts[0]["x"] * (e.atts[0]["y"] - 64)).floorToDouble(),
-                                                        fit: BoxFit.cover),
-                                                  );
-                                                } else {
-                                                  return Container();
-                                                }
-                                              }),
-                                              Padding(
-                                                padding: const EdgeInsets.all(16.0),
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      e.text.replaceAll(RegExp(r"(\r|\n)+"), "\n").split("\n")[0],
-                                                      textScaler: TextScaler.linear(1.25),
-                                                    ),
-                                                    Text(
-                                                      e.date,
-                                                      textScaler: TextScaler.linear(0.85),
-                                                    ),
-                                                    Builder(builder: (context) {
-                                                      if (e.text.split("\n").length > 1) {
-                                                        return Column(children: [
-                                                          SizedBox(
-                                                            height: 12,
-                                                          ),
-                                                          Text(
-                                                            e.text.replaceAll(RegExp(r"(\r|\n)+"), "\n").split("\n").sublist(1).join("\n").trim(),
-                                                          ),
-                                                        ]);
-                                                      } else {
-                                                        return Container();
-                                                      }
-                                                    }),
-                                                    Builder(builder: (context) {
-                                                      if (e.url != "null") {
-                                                        return Padding(
-                                                          padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                                          child: Container(
-                                                            alignment: Alignment.centerLeft,
-                                                            child: FilledButton.tonal(
-                                                                onPressed: () {
-                                                                  showModalBottomSheet(
-                                                                      isScrollControlled: true,
-                                                                      useSafeArea: true,
-                                                                      showDragHandle: true,
-                                                                      enableDrag: false,
-                                                                      context: context,
-                                                                      builder: (context) {
-                                                                        return Center(
-                                                                          child: Column(
-                                                                            children: [
-                                                                              // ignore: sized_box_for_whitespace
-                                                                              Container(
-                                                                                  height: MediaQuery.of(context).size.height - 100,
-                                                                                  child: InAppWebView(
-                                                                                      initialUrlRequest: URLRequest(url: WebUri(e.url.toString())),
-                                                                                      initialUserScripts: UnmodifiableListView([
-                                                                                        UserScript(source: """
+                      FutureBuilder<List<Message>>(
+                        future: futureMessages,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: snapshot.data!
+                                  .map((e) => Card(
+                                      shadowColor: Color(0x00FFFFFF),
+                                      margin: EdgeInsets.fromLTRB(0, 0, 0, 16),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                      elevation: 2,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Builder(builder: (context) {
+                                            if (e.atts.isNotEmpty) {
+                                              return ClipRRect(
+                                                borderRadius: BorderRadius.only(
+                                                    topLeft: Radius.circular(8),
+                                                    topRight: Radius.circular(8),
+                                                    bottomLeft: Radius.circular(4),
+                                                    bottomRight: Radius.circular(4)),
+                                                child: CachedNetworkImage(
+                                                    imageUrl: e.atts[0]["url"],
+                                                    width: MediaQuery.of(context).size.width,
+                                                    height: (MediaQuery.of(context).size.width / e.atts[0]["x"] * (e.atts[0]["y"] - 64)).floorToDouble(),
+                                                    fit: BoxFit.cover),
+                                              );
+                                            } else {
+                                              return Container();
+                                            }
+                                          }),
+                                          Padding(
+                                            padding: const EdgeInsets.all(16.0),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  e.text.replaceAll(RegExp(r"(\r|\n)+"), "\n").split("\n")[0],
+                                                  textScaler: TextScaler.linear(1.25),
+                                                ),
+                                                Text(
+                                                  e.date,
+                                                  textScaler: TextScaler.linear(0.85),
+                                                ),
+                                                Builder(builder: (context) {
+                                                  if (e.text.split("\n").length > 1) {
+                                                    return Column(children: [
+                                                      SizedBox(
+                                                        height: 12,
+                                                      ),
+                                                      Text(
+                                                        e.text.replaceAll(RegExp(r"(\r|\n)+"), "\n").split("\n").sublist(1).join("\n").trim(),
+                                                      ),
+                                                    ]);
+                                                  } else {
+                                                    return Container();
+                                                  }
+                                                }),
+                                                Builder(builder: (context) {
+                                                  if (e.url != "null") {
+                                                    return Padding(
+                                                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                                      child: Container(
+                                                        alignment: Alignment.centerLeft,
+                                                        child: FilledButton.tonal(
+                                                            onPressed: () {
+                                                              showModalBottomSheet(
+                                                                  isScrollControlled: true,
+                                                                  useSafeArea: true,
+                                                                  showDragHandle: true,
+                                                                  enableDrag: false,
+                                                                  context: context,
+                                                                  builder: (context) {
+                                                                    return Center(
+                                                                      child: Column(
+                                                                        children: [
+                                                                          // ignore: sized_box_for_whitespace
+                                                                          Container(
+                                                                              height: MediaQuery.of(context).size.height - 100,
+                                                                              child: InAppWebView(
+                                                                                  initialUrlRequest: URLRequest(url: WebUri(e.url.toString())),
+                                                                                  initialUserScripts: UnmodifiableListView([
+                                                                                    UserScript(source: """
 																								const themeInterval = setInterval(() => {
 																									if (document.getElementById('customStyle')) {
 																										clearInterval(themeInterval);
@@ -209,74 +208,72 @@ class _MessagesPageState extends State<MessagesPage> {
 																									document.body.appendChild(customStyle);
 																								}, 20)
 																								""", injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START)
-                                                                                      ]),
-                                                                                      shouldOverrideUrlLoading: (controller, navigationAction) async {
-                                                                                        var uri = navigationAction.request.url!;
+                                                                                  ]),
+                                                                                  shouldOverrideUrlLoading: (controller, navigationAction) async {
+                                                                                    var uri = navigationAction.request.url!;
 
-                                                                                        if (!["http", "https", "file", "chrome", "data", "javascript", "about"]
-                                                                                            .contains(uri.scheme)) {
-                                                                                          if (await canLaunchUrl(uri)) {
-                                                                                            await launchUrl(
-                                                                                              uri,
-                                                                                            );
-                                                                                          }
-                                                                                        } else {
-                                                                                          browser.open(url: uri);
-                                                                                          Navigator.pop(context);
-                                                                                        }
-                                                                                        return NavigationActionPolicy.CANCEL;
-                                                                                      }))
-                                                                            ],
-                                                                          ),
-                                                                        );
-                                                                      });
-                                                                },
-                                                                child: Text("Read more")),
-                                                          ),
-                                                        );
-                                                      } else {
-                                                        return Container();
-                                                      }
-                                                    }),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          )))
-                                      .toList(),
-                                );
-                              } else if (snapshot.hasData && snapshot.data!.isEmpty && !isLoading) {
-                                return Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Text('${snapshot.error ?? "Failed to load data"}'),
-                                    SizedBox(height: 10),
-                                    FilledButton.tonalIcon(
-                                      onPressed: () {
-                                        isLoading = true;
-                                        futureMessages = fetchMessages();
-                                        setState(() {});
-                                      },
-                                      icon: Icon(
-                                        Icons.refresh_rounded,
-                                        size: 20,
-                                      ),
-                                      label: Text("Retry"),
-                                    ),
-                                  ],
-                                );
-                              }
+                                                                                    if (!["http", "https", "file", "chrome", "data", "javascript", "about"]
+                                                                                        .contains(uri.scheme)) {
+                                                                                      if (await canLaunchUrl(uri)) {
+                                                                                        await launchUrl(
+                                                                                          uri,
+                                                                                        );
+                                                                                      }
+                                                                                    } else {
+                                                                                      browser.open(url: uri);
+                                                                                      Navigator.pop(context);
+                                                                                    }
+                                                                                    return NavigationActionPolicy.CANCEL;
+                                                                                  }))
+                                                                        ],
+                                                                      ),
+                                                                    );
+                                                                  });
+                                                            },
+                                                            child: Text("Read more")),
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    return Container();
+                                                  }
+                                                }),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      )))
+                                  .toList(),
+                            );
+                          } else if (snapshot.hasData && snapshot.data!.isEmpty && !isLoading) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Text('${snapshot.error ?? "Failed to load data"}'),
+                                SizedBox(height: 10),
+                                FilledButton.tonalIcon(
+                                  onPressed: () {
+                                    isLoading = true;
+                                    futureMessages = fetchMessages();
+                                    setState(() {});
+                                  },
+                                  icon: Icon(
+                                    Icons.refresh_rounded,
+                                    size: 20,
+                                  ),
+                                  label: Text("Retry"),
+                                ),
+                              ],
+                            );
+                          }
 
-                              // By default, show a loading spinner.
-                              return const CircularProgressIndicator();
-                            },
-                          )
-                        ],
+                          // By default, show a loading spinner.
+                          return const CircularProgressIndicator();
+                        },
                       )
                     ],
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
