@@ -9,16 +9,16 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import io.flutter.embedding.android.FlutterActivity
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 
 class MainActivity : FlutterActivity() {
 
   private var flutterUIReady : Boolean = false
+  private var animationDone: Boolean = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
-    // This activity will be handling the splash screen transition.
-    val splashScreen = installSplashScreen()
 
     // The splash screen goes edge to edge, so for a smooth transition to our app, also
     // want to draw edge to edge.
@@ -35,20 +35,22 @@ class MainActivity : FlutterActivity() {
       windowInsets.inset(insets)
     }
 
-    // Setting an OnExitAnimationListener on the splash screen indicates
-    // to the system that the application will handle the exit animation.
-    // The listener will be called once the app is ready.
-//    splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
-//
-//    }
+    runBlocking {
+      withTimeout(2000) {
+        if (flutterUIReady) {
+          hideSplashScreenAnimation()
+        } else {
+          animationDone = true
+        }
+      }
+    }
   }
 
   override fun onFlutterUiDisplayed(){
     flutterUIReady = true
-
-//    if (initialAnimationFinished) {
+    if (animationDone) {
       hideSplashScreenAnimation()
-//    }
+    }
   }
 
   override fun onFlutterUiNoLongerDisplayed(){
