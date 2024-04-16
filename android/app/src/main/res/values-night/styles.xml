@@ -7,4 +7,6 @@
     <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowBackground">@android:color/background_dark</item>
     </style>
+    <color name="accent">@android:color/holo_blue_light</color>
+    <color name="background">@android:color/background_dark</color>
 </resources>

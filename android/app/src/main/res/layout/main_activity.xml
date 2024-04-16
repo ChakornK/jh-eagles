@@ -22,29 +22,18 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/system_neutral2_900">
+    android:background="@color/background">
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="265dp"
         android:layout_height="275dp"
         android:src="@drawable/icon_animated"
-        android:tint="@android:color/system_accent1_300"
+        android:tint="@color/accent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon_animated" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-64dp"
-        android:text="JH Eagles"
-        android:textColor="@android:color/system_accent1_10"
-        android:textSize="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

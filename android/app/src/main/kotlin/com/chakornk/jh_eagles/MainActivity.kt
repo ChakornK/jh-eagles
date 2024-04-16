@@ -1,32 +1,18 @@
 package com.chakornk.jh_eagles
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.transition.AutoTransition
-import android.transition.Transition
-import android.transition.TransitionManager
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.View
 import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.splashscreen.SplashScreenViewProvider
-import androidx.core.view.postDelayed
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.interpolator.view.animation.FastOutLinearInInterpolator
 import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : FlutterActivity() {
 
   private var flutterUIReady : Boolean = false
-  private var initialAnimationFinished : Boolean = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -37,7 +23,6 @@ class MainActivity : FlutterActivity() {
     // The splash screen goes edge to edge, so for a smooth transition to our app, also
     // want to draw edge to edge.
     WindowCompat.setDecorFitsSystemWindows(window, false)
-    val insetsController = WindowCompat.getInsetsController(window, window.decorView)
 
     // The content view needs to be set before calling setOnExitAnimationListener
     // to ensure that the SplashScreenView is attached to the right view root.
