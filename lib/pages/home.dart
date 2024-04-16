@@ -81,232 +81,243 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (BuildContext context, BoxConstraints viewportConstraints) {
-      print(MediaQuery.sizeOf(context).width);
-      return Center(
-        child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Flex(direction: MediaQuery.sizeOf(context).width > 600 ? Axis.horizontal : Axis.vertical, children: [
-              Card(
-                shadowColor: Color(0x00FFFFFF),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: MediaQuery.sizeOf(context).width > 600 ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-                    mainAxisAlignment: MediaQuery.sizeOf(context).width > 600 ? MainAxisAlignment.center : MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][DateTime.now().weekday - 1]} ${[
-                          "January",
-                          "February",
-                          "March",
-                          "April",
-                          "May",
-                          "June",
-                          "July",
-                          "August",
-                          "September",
-                          "October",
-                          "November",
-                          "December"
-                        ][DateTime.now().month - 1]} ${DateTime.now().day}, ${DateTime.now().year}",
-                        textScaler: TextScaler.linear(1.25),
-                      ),
-                      FutureBuilder<HomeData>(
-                          future: futureData,
-                          builder: (context, snapshot) {
-                            return Column(
-                              children: [
-                                Text(
-                                  (snapshot.data?.blockRotation.toString() ?? "N/A"),
-                                  textScaler: TextScaler.linear(1.75),
-                                ),
-                              ],
-                            );
-                          }),
-                      Divider(
-                        height: 24,
-                      ),
-                      FutureBuilder<HomeData>(
-                          future: futureData,
-                          builder: (context, snapshot) {
-                            if (MediaQuery.sizeOf(context).width > 600) {
-                              return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                                Icon(
-                                  weatherIcons[snapshot.data?.weather["icon"].toString() ?? "unknown"],
-                                ),
-                                Text(
-                                  snapshot.data?.weather["condition"].toString() ?? "N/A",
-                                  textScaler: TextScaler.linear(1.35),
-                                ),
-                                Text(
-                                  snapshot.data?.weather["temperature"].toString() ?? "N/A",
-                                  textScaler: TextScaler.linear(1.35),
-                                ),
-                              ]);
-                            } else {
-                              return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                                Icon(
-                                  weatherIcons[snapshot.data?.weather["icon"].toString() ?? "unknown"],
-                                ),
-                                SizedBox(width: 12),
-                                Text(
-                                  snapshot.data?.weather["condition"].toString() ?? "N/A",
-                                  textScaler: TextScaler.linear(1.35),
-                                ),
-                                SizedBox(width: 6),
-                                Text("•", textScaler: TextScaler.linear(1.35)),
-                                SizedBox(width: 6),
-                                Text(
-                                  snapshot.data?.weather["temperature"].toString() ?? "N/A",
-                                  textScaler: TextScaler.linear(1.35),
-                                ),
-                              ]);
-                            }
-                          })
-                    ],
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints viewportConstraints) {
+        print(MediaQuery.sizeOf(context).width);
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Flex(
+              direction: MediaQuery.sizeOf(context).width > 600 ? Axis.horizontal : Axis.vertical,
+              children: [
+                Card(
+                  shadowColor: Color(0x00FFFFFF),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: MediaQuery.sizeOf(context).width > 600 ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+                      mainAxisAlignment: MediaQuery.sizeOf(context).width > 600 ? MainAxisAlignment.center : MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][DateTime.now().weekday - 1]} ${[
+                            "January",
+                            "February",
+                            "March",
+                            "April",
+                            "May",
+                            "June",
+                            "July",
+                            "August",
+                            "September",
+                            "October",
+                            "November",
+                            "December"
+                          ][DateTime.now().month - 1]} ${DateTime.now().day}, ${DateTime.now().year}",
+                          textScaler: TextScaler.linear(1.25),
+                        ),
+                        FutureBuilder<HomeData>(
+                            future: futureData,
+                            builder: (context, snapshot) {
+                              return Column(
+                                children: [
+                                  Text(
+                                    (snapshot.data?.blockRotation.toString() ?? "N/A"),
+                                    textScaler: TextScaler.linear(1.75),
+                                  ),
+                                ],
+                              );
+                            }),
+                        Divider(
+                          height: 24,
+                        ),
+                        FutureBuilder<HomeData>(
+                            future: futureData,
+                            builder: (context, snapshot) {
+                              if (MediaQuery.sizeOf(context).width > 600) {
+                                return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                  Icon(
+                                    weatherIcons[snapshot.data?.weather["icon"].toString() ?? "unknown"],
+                                  ),
+                                  Text(
+                                    snapshot.data?.weather["condition"].toString() ?? "N/A",
+                                    textScaler: TextScaler.linear(1.35),
+                                  ),
+                                  Text(
+                                    snapshot.data?.weather["temperature"].toString() ?? "N/A",
+                                    textScaler: TextScaler.linear(1.35),
+                                  ),
+                                ]);
+                              } else {
+                                return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                  Icon(
+                                    weatherIcons[snapshot.data?.weather["icon"].toString() ?? "unknown"],
+                                  ),
+                                  SizedBox(width: 12),
+                                  Text(
+                                    snapshot.data?.weather["condition"].toString() ?? "N/A",
+                                    textScaler: TextScaler.linear(1.35),
+                                  ),
+                                  SizedBox(width: 6),
+                                  Text("•", textScaler: TextScaler.linear(1.35)),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    snapshot.data?.weather["temperature"].toString() ?? "N/A",
+                                    textScaler: TextScaler.linear(1.35),
+                                  ),
+                                ]);
+                              }
+                            })
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
+                SizedBox(
+                  height: 8.0,
+                ),
+                Expanded(
                   child: Card(
-                      clipBehavior: Clip.antiAlias,
-                      shadowColor: Color(0x00FFFFFF),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            {
-                              "index": 0,
-                              "title": "Website",
-                              "subtitle": "surreyschools.ca/johnht",
-                              "link": "https://www.surreyschools.ca/johnht/",
-                              "icon": Icons.public_outlined
-                            },
-                            {
-                              "index": 1,
-                              "title": "MyEdBC",
-                              "subtitle": "Check grades, schedule, and view report cards",
-                              "link": "https://myeducation.gov.bc.ca/aspen/logon.do",
-                              "icon": Icons.school_outlined
-                            },
-                            {
-                              "index": 2,
-                              "title": "School Cash Online",
-                              "subtitle": "Pay school fees",
-                              "link": "https://www.schoolcashonline.com/",
-                              "icon": Icons.payments_outlined
-                            },
-                            {
-                              "index": 3,
-                              "title": "Counsellor Appointments",
-                              "subtitle": "Book an appointment online",
-                              "link": "https://jh.counsellorappointments.com/",
-                              "icon": Icons.calendar_month_outlined
-                            },
-                            {
-                              "index": 4,
-                              "title": "Locker Assignments",
-                              "subtitle": "Register and choose a locker. Student ID# required",
-                              "link": "https://jh.lockerassignment.com",
-                              "icon": Icons.lock_outline
-                            },
-                            {
-                              "index": 5,
-                              "title": "Bell Schedule",
-                              "subtitle": "Regular, Late Start Tuesday and Early Dismissal",
-                              "link": "https://eagletime.appazur.com/media/info/eagletime/JH_bells_and_blocks_2023-24_WtvSI0Z.pdf",
-                              "icon": Icons.schedule_outlined
-                            },
-                            {
-                              "index": 6,
-                              "title": "School Map",
-                              "subtitle": "Level 1 / Level 2",
-                              "link": "https://eagletime.appazur.com/media/info/eagletime/map_JH_2019_.jpg_CvI94vg.png",
-                              "icon": Icons.map_outlined
-                            },
-                            {"index": 7, "title": "Phone", "subtitle": "(604) 581-5500", "link": "tel:+16045815500", "icon": Icons.phone_outlined},
-                            {
-                              "index": 8,
-                              "title": "Email",
-                              "subtitle": "johnstonheights@surreyschools.ca",
-                              "link": "mailto:johnstonheights@surreyschools.ca",
-                              "icon": Icons.email_outlined
-                            },
-                            {
-                              "index": 9,
-                              "title": "Map / Directions",
-                              "subtitle": "15350 - 99th Avenue, Surrey, BC V3R 0R9",
-                              "link": "https://goo.gl/maps/K8cF7KdCun4r6RV89",
-                              "icon": Icons.place_outlined
-                            },
-                            {
-                              "index": 10,
-                              "title": "Student Accident Insurance",
-                              "subtitle": "How to purchase student accident insurance",
-                              "link": "https://eagletime.appazur.com/media/info/eagletime/2021-2022_Student_Accident_-_newsletter_schools_wording_937zRqp.pdf",
-                              "icon": Icons.medical_services_outlined
-                            },
-                            {
-                              "index": 11,
-                              "title": "Insure My Kids",
-                              "subtitle": "",
-                              "link": "https://insuremykids.com/",
-                              "icon": Icons.medical_services_outlined
-                            },
-                            {
-                              "index": 12,
-                              "title": "StudyInsured Student Accident Insurance",
-                              "subtitle": "",
-                              "link": "https://www.studyinsuredstudentaccident.com/",
-                              "icon": Icons.medical_services_outlined
-                            },
-                          ]
-                              .map((e) => (Column(
-                                    children: [
-                                      (e["index"] != 0)
-                                          ? Divider(
-                                              thickness: 0.5,
-                                              height: 1,
-                                            )
-                                          : Container(),
-                                      InkWell(
-                                          onTap: () async {
-                                            var uri = WebUri(e["link"] as String);
+                    clipBehavior: Clip.antiAlias,
+                    shadowColor: Color(0x00FFFFFF),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          {
+                            "index": 0,
+                            "title": "Website",
+                            "subtitle": "surreyschools.ca/johnht",
+                            "link": "https://www.surreyschools.ca/johnht/",
+                            "icon": Icons.public_outlined
+                          },
+                          {
+                            "index": 1,
+                            "title": "MyEdBC",
+                            "subtitle": "Check grades, schedule, and view report cards",
+                            "link": "https://myeducation.gov.bc.ca/aspen/logon.do",
+                            "icon": Icons.school_outlined
+                          },
+                          {
+                            "index": 2,
+                            "title": "School Cash Online",
+                            "subtitle": "Pay school fees",
+                            "link": "https://www.schoolcashonline.com/",
+                            "icon": Icons.payments_outlined
+                          },
+                          {
+                            "index": 3,
+                            "title": "Counsellor Appointments",
+                            "subtitle": "Book an appointment online",
+                            "link": "https://jh.counsellorappointments.com/",
+                            "icon": Icons.calendar_month_outlined
+                          },
+                          {
+                            "index": 4,
+                            "title": "Locker Assignments",
+                            "subtitle": "Register and choose a locker. Student ID# required",
+                            "link": "https://jh.lockerassignment.com",
+                            "icon": Icons.lock_outline
+                          },
+                          {
+                            "index": 5,
+                            "title": "Bell Schedule",
+                            "subtitle": "Regular, Late Start Tuesday and Early Dismissal",
+                            "link": "https://eagletime.appazur.com/media/info/eagletime/JH_bells_and_blocks_2023-24_WtvSI0Z.pdf",
+                            "icon": Icons.schedule_outlined
+                          },
+                          {
+                            "index": 6,
+                            "title": "School Map",
+                            "subtitle": "Level 1 / Level 2",
+                            "link": "https://eagletime.appazur.com/media/info/eagletime/map_JH_2019_.jpg_CvI94vg.png",
+                            "icon": Icons.map_outlined
+                          },
+                          {"index": 7, "title": "Phone", "subtitle": "(604) 581-5500", "link": "tel:+16045815500", "icon": Icons.phone_outlined},
+                          {
+                            "index": 8,
+                            "title": "Email",
+                            "subtitle": "johnstonheights@surreyschools.ca",
+                            "link": "mailto:johnstonheights@surreyschools.ca",
+                            "icon": Icons.email_outlined
+                          },
+                          {
+                            "index": 9,
+                            "title": "Map / Directions",
+                            "subtitle": "15350 - 99th Avenue, Surrey, BC V3R 0R9",
+                            "link": "https://goo.gl/maps/K8cF7KdCun4r6RV89",
+                            "icon": Icons.place_outlined
+                          },
+                          {
+                            "index": 10,
+                            "title": "Student Accident Insurance",
+                            "subtitle": "How to purchase student accident insurance",
+                            "link": "https://eagletime.appazur.com/media/info/eagletime/2021-2022_Student_Accident_-_newsletter_schools_wording_937zRqp.pdf",
+                            "icon": Icons.medical_services_outlined
+                          },
+                          {
+                            "index": 11,
+                            "title": "Insure My Kids",
+                            "subtitle": "",
+                            "link": "https://insuremykids.com/",
+                            "icon": Icons.medical_services_outlined
+                          },
+                          {
+                            "index": 12,
+                            "title": "StudyInsured Student Accident Insurance",
+                            "subtitle": "",
+                            "link": "https://www.studyinsuredstudentaccident.com/",
+                            "icon": Icons.medical_services_outlined
+                          },
+                        ]
+                            .map((e) => (Column(
+                                  children: [
+                                    (e["index"] != 0)
+                                        ? Divider(
+                                            thickness: 0.5,
+                                            height: 1,
+                                          )
+                                        : Container(),
+                                    InkWell(
+                                        onTap: () async {
+                                          var uri = WebUri(e["link"] as String);
 
-                                            if (!["http", "https", "file", "chrome", "data", "javascript", "about"].contains(uri.scheme)) {
-                                              if (await canLaunchUrl(uri)) {
-                                                await launchUrl(
-                                                  uri,
-                                                );
-                                              }
-                                            } else {
-                                              await browser.open(url: uri);
+                                          if (!["http", "https", "file", "chrome", "data", "javascript", "about"].contains(uri.scheme)) {
+                                            if (await canLaunchUrl(uri)) {
+                                              await launchUrl(
+                                                uri,
+                                              );
                                             }
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(16.0),
-                                            child: Row(children: [
-                                              Icon(e["icon"] as IconData, size: 24),
-                                              SizedBox(width: 16),
-                                              Flexible(
-                                                  child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  (e["title"] != "") ? Text(e["title"] as String, textScaler: TextScaler.linear(1.25)) : Container(),
-                                                  (e["subtitle"] != "") ? Text(e["subtitle"] as String, textScaler: TextScaler.linear(0.9)) : Container(),
-                                                ],
-                                              ))
-                                            ]),
-                                          )),
-                                    ],
-                                  )))
-                              .toList(),
-                        ),
-                      ))),
-            ])),
-      );
-    });
+                                          } else {
+                                            await browser.open(url: uri);
+                                          }
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Row(children: [
+                                            Icon(e["icon"] as IconData, size: 24),
+                                            SizedBox(width: 16),
+                                            Flexible(
+                                                child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                (e["title"] != "") ? Text(e["title"] as String, textScaler: TextScaler.linear(1.25)) : Container(),
+                                                (e["subtitle"] != "") ? Text(e["subtitle"] as String, textScaler: TextScaler.linear(0.9)) : Container(),
+                                              ],
+                                            ))
+                                          ]),
+                                        )),
+                                  ],
+                                )))
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
