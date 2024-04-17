@@ -83,7 +83,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints viewportConstraints) {
         print(MediaQuery.sizeOf(context).width);
@@ -301,52 +300,50 @@ class _HomePageState extends State<HomePage> {
                               "link": "https://www.studyinsuredstudentaccident.com/",
                               "icon": Icons.medical_services_outlined
                             },
-                          ]
-                              .map(
-                                (e) => (Column(
-                                  children: [
-                                    Divider(
-                                      thickness: 0.5,
-                                      height: 1,
-                                    ),
-                                    InkWell(
-                                      onTap: () async {
-                                        var uri = WebUri(e["link"] as String);
+                          ].map(
+                            (e) => (Column(
+                              children: [
+                                Divider(
+                                  thickness: 0.5,
+                                  height: 1,
+                                ),
+                                InkWell(
+                                  onTap: () async {
+                                    var uri = WebUri(e["link"] as String);
 
-                                        if (!["http", "https", "file", "chrome", "data", "javascript", "about"].contains(uri.scheme)) {
-                                          if (await canLaunchUrl(uri)) {
-                                            await launchUrl(
-                                              uri,
-                                            );
-                                          }
-                                        } else {
-                                          await browser.open(url: uri);
-                                        }
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Row(
-                                          children: [
-                                            Icon(e["icon"] as IconData, size: 24),
-                                            SizedBox(width: 16),
-                                            Flexible(
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  (e["title"] != "") ? Text(e["title"] as String, textScaler: TextScaler.linear(1.25)) : Container(),
-                                                  (e["subtitle"] != "") ? Text(e["subtitle"] as String, textScaler: TextScaler.linear(0.9)) : Container(),
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
+                                    if (!["http", "https", "file", "chrome", "data", "javascript", "about"].contains(uri.scheme)) {
+                                      if (await canLaunchUrl(uri)) {
+                                        await launchUrl(
+                                          uri,
+                                        );
+                                      }
+                                    } else {
+                                      await browser.open(url: uri);
+                                    }
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Row(
+                                      children: [
+                                        Icon(e["icon"] as IconData, size: 24),
+                                        SizedBox(width: 16),
+                                        Flexible(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              (e["title"] != "") ? Text(e["title"] as String, textScaler: TextScaler.linear(1.25)) : Container(),
+                                              (e["subtitle"] != "") ? Text(e["subtitle"] as String, textScaler: TextScaler.linear(0.9)) : Container(),
+                                            ],
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                  ],
-                                )),
-                              )
-                              .toList()
+                                  ),
+                                ),
+                              ],
+                            )),
+                          )
                         ],
                       ),
                     ),
