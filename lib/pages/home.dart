@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:weather_icons/weather_icons.dart';
+import 'package:intl/intl.dart';
 
 class HomeData {
   String blockRotation;
@@ -99,20 +100,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MediaQuery.sizeOf(context).width > 600 ? MainAxisAlignment.center : MainAxisAlignment.start,
                       children: [
                         Text(
-                          "${["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][DateTime.now().weekday - 1]} ${[
-                            "January",
-                            "February",
-                            "March",
-                            "April",
-                            "May",
-                            "June",
-                            "July",
-                            "August",
-                            "September",
-                            "October",
-                            "November",
-                            "December"
-                          ][DateTime.now().month - 1]} ${DateTime.now().day}, ${DateTime.now().year}",
+                          DateFormat("EEEE MMMM d, yyyy").format(DateTime.now()),
                           textScaler: TextScaler.linear(1.25),
                         ),
                         FutureBuilder<HomeData>(
