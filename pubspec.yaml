@@ -16,7 +16,9 @@ dependencies:
 
   flutter_inappwebview: ^6.0.0
   http: ^1.2.1
+  jiffy: ^6.3.0
   provider: ^6.0.0
+  sticky_headers: ^0.3.0+2
   url_launcher: ^6.2.6
   weather_icons: ^3.0.0
 
