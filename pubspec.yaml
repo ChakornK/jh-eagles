@@ -11,6 +11,7 @@ environment:
 dependencies:
   cached_network_image: ^3.3.1
   dynamic_color: ^1.7.0
+  easy_image_viewer: ^1.4.1
   flutter:
     sdk: flutter
 
@@ -31,3 +32,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - lib/assets/
