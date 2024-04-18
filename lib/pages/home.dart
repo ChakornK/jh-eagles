@@ -205,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                                 doubleTapZoomable: true,
                                 swipeDismissible: true,
                                 useSafeArea: true,
-                                immersive: true,
+                                immersive: false,
                               );
                             },
                             child: Padding(
