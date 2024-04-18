@@ -4,6 +4,7 @@ import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:weather_icons/weather_icons.dart';
 import 'package:intl/intl.dart';
@@ -53,6 +54,7 @@ final weatherIcons = {
 
 class _HomePageState extends State<HomePage> {
   late Future<HomeData> futureData;
+  Map<String, String> appInfo = {"name": "", "version": "", "buildNumber": ""};
 
   Future<HomeData> fetchData() async {
     final blockRotation = await http.get(Uri.parse("https://eagletime.vercel.app/block"));
@@ -79,10 +81,18 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     futureData = fetchData();
+    (() async {
+      var info = await PackageInfo.fromPlatform();
+      setState(() {
+        print(info.appName);
+        appInfo = {"name": info.appName, "version": info.version, "buildNumber": info.buildNumber};
+      });
+    })();
   }
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints viewportConstraints) {
         print(MediaQuery.sizeOf(context).width);
@@ -343,7 +353,104 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ],
                             )),
-                          )
+                          ),
+                          Divider(
+                            thickness: 0.5,
+                            height: 1,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return Scaffold(
+                                      appBar: AppBar(
+                                        title: Text("About the app"),
+                                      ),
+                                      body: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius: BorderRadius.circular(100),
+                                                  child: Image.asset("lib/assets/icon.png", width: 84, height: 84),
+                                                ),
+                                                SizedBox(width: 16),
+                                                Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      appInfo["name"] as String,
+                                                      style: theme.textTheme.titleLarge,
+                                                    ),
+                                                    Text(
+                                                      "${appInfo["version"]} (${appInfo["buildNumber"]})",
+                                                      style: theme.textTheme.bodySmall,
+                                                    ),
+                                                    SizedBox(height: 8),
+                                                    Text("Made by ChakornK")
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            Divider(
+                                              height: 32,
+                                            ),
+                                            Text(
+                                              "A redesign of the Johnston Heights EagleTime app by Chakorn",
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            Divider(
+                                              height: 32,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                FilledButton.tonal(
+                                                    onPressed: () {
+                                                      launchUrl(Uri.parse("https://github.com/ChakornK/jh-eagles"));
+                                                    },
+                                                    child: Text("Source code")),
+                                                SizedBox(width: 8),
+                                                FilledButton.tonal(
+                                                    onPressed: () {
+                                                      showLicensePage(context: context);
+                                                    },
+                                                    child: Text("View licenses")),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.info_outline, size: 24),
+                                  SizedBox(width: 16),
+                                  Flexible(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text("About the app", textScaler: TextScaler.linear(1.25)),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
