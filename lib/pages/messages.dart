@@ -169,9 +169,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                                                     return Center(
                                                                       child: Column(
                                                                         children: [
-                                                                          // ignore: sized_box_for_whitespace
-                                                                          Container(
-                                                                              height: MediaQuery.of(context).size.height - 100,
+                                                                          Expanded(
                                                                               child: InAppWebView(
                                                                                   initialUrlRequest: URLRequest(url: WebUri(e.url.toString())),
                                                                                   initialUserScripts: UnmodifiableListView([
