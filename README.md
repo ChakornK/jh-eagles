@@ -6,7 +6,7 @@ JH Eagles App
 </h3>
 <br>
 <p align="center">
-  <img src="https://img.shields.io/badge/react_native-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB">
+  <img src="https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white">
   <img src="https://img.shields.io/badge/Android-2CAB65?style=for-the-badge&logo=android&logoColor=white">
 </p>
 <p align="center"><i>A utility app for Johnston Heights students</i></p>
@@ -16,30 +16,21 @@ JH Eagles App
 <h2>🚀 How to run</h2>
 <p>Clone repo</p>
 
-```ps
-git clone https://github.com/ChakornK/jheagles-react-native.git
-cd jheagles-react-native
+```sh
+git clone https://github.com/ChakornK/jh-eagles
+cd jh-eagles
 ```
 
 <br>
-<p>Install dependencies</p>
+<p>Run the Flutter app</p>
 
-```ps
-npm install 
-npm install -g expo
+```sh
+flutter run
 ```
 
 <br>
-<p>Run the app with Expo</p>
+<p>Build the app</p>
 
-Install Expo Go app on your phone
-```ps
-npm start
-```
-
-<br>
-<p>Build the app with EAS</p>
-
-```ps
-npm run build-apk
+```sh
+flutter build apk
 ```
