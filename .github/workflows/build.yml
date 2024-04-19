@@ -1,0 +1,28 @@
+name: Build APK
+
+on: [workflow_dispatch, push]
+
+jobs:
+  android:
+    name: Build APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version-file: pubspec.yaml
+
+      - run: flutter pub get
+
+      - run: flutter build apk
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-universal
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
