@@ -40,8 +40,8 @@ jobs:
           echo keyPassword=\${{ secrets.KEY_STORE }} > ${{env.PROPERTIES_PATH}}
           echo storePassword=\${{ secrets.KEY_PASSWORD }} >> ${{env.PROPERTIES_PATH}}
           echo keyAlias=\${{ secrets.KEY_ALIAS }} >> ${{env.PROPERTIES_PATH}}
-          echo storeFile=/home/runner/work/jh-eagles/android/app/key.jks >> ${{env.PROPERTIES_PATH}}
-          echo "${{ secrets.KEYSTORE2 }}" | base64 --decode > /home/runner/work/jh-eagles/android/app/key.jks
+          echo storeFile=/home/runner/key.jks >> ${{env.PROPERTIES_PATH}}
+          echo "${{ secrets.KEYSTORE2 }}" | base64 --decode > /home/runner/key.jks
 
       - run: flutter pub get
 
