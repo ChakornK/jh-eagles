@@ -182,7 +182,9 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.of(context).push(bellScheduleScreen());
+                            },
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: Row(
@@ -360,77 +362,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           InkWell(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return Scaffold(
-                                      appBar: AppBar(
-                                        title: Text("About the app"),
-                                      ),
-                                      body: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                ClipRRect(
-                                                  borderRadius: BorderRadius.circular(100),
-                                                  child: Image.asset("lib/assets/icon.png", width: 84, height: 84),
-                                                ),
-                                                SizedBox(width: 16),
-                                                Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      appInfo["name"] as String,
-                                                      style: theme.textTheme.titleLarge,
-                                                    ),
-                                                    Text(
-                                                      "${appInfo["version"]} (${appInfo["buildNumber"]})",
-                                                      style: theme.textTheme.bodySmall,
-                                                    ),
-                                                    SizedBox(height: 8),
-                                                    Text("Made by ChakornK")
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                            Divider(
-                                              height: 32,
-                                            ),
-                                            Text(
-                                              "A redesign of the Johnston Heights EagleTime app by Chakorn",
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            Divider(
-                                              height: 32,
-                                            ),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                FilledButton.tonal(
-                                                    onPressed: () {
-                                                      launchUrl(Uri.parse("https://github.com/ChakornK/jh-eagles"));
-                                                    },
-                                                    child: Text("Source code")),
-                                                SizedBox(width: 8),
-                                                FilledButton.tonal(
-                                                    onPressed: () {
-                                                      showLicensePage(context: context);
-                                                    },
-                                                    child: Text("View licenses")),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              );
+                              Navigator.of(context).push(aboutScreen(appInfo));
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
@@ -463,4 +395,186 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+}
+
+MaterialPageRoute aboutScreen(dynamic appInfo) {
+  return MaterialPageRoute(
+    builder: (context) {
+      var theme = Theme.of(context);
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("About the app"),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Image.asset("lib/assets/icon.png", width: 84, height: 84),
+                  ),
+                  SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        appInfo["name"] as String,
+                        style: theme.textTheme.titleLarge,
+                      ),
+                      Text(
+                        "${appInfo["version"]} (${appInfo["buildNumber"]})",
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      SizedBox(height: 8),
+                      Text("Made by ChakornK")
+                    ],
+                  ),
+                ],
+              ),
+              Divider(
+                height: 32,
+              ),
+              Text(
+                "A redesign of the Johnston Heights EagleTime app by Chakorn",
+                textAlign: TextAlign.center,
+              ),
+              Divider(
+                height: 32,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FilledButton.tonal(
+                      onPressed: () {
+                        launchUrl(Uri.parse("https://github.com/ChakornK/jh-eagles"));
+                      },
+                      child: Text("Source code")),
+                  SizedBox(width: 8),
+                  FilledButton.tonal(
+                      onPressed: () {
+                        showLicensePage(context: context);
+                      },
+                      child: Text("View licenses")),
+                ],
+              )
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+MaterialPageRoute bellScheduleScreen() {
+  return MaterialPageRoute(
+    builder: (context) {
+      var theme = Theme.of(context);
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("Bell Schedule"),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ...[
+                  {
+                    "title": "Regular (Mon, Wed, Thu, Fri)",
+                    "data": [
+                      {"key": "Warning Bell", "value": "8:25am"},
+                      {"key": "First Block", "value": "8:30am - 9:50am"},
+                      {"key": "Second Block", "value": "9:55am - 11:15am"},
+                      {"key": "Lunch Break", "value": "11:15am - 11:55pm"},
+                      {"key": "Third Block", "value": "12:00pm - 1:20pm"},
+                      {"key": "Fourth Block", "value": "1:25pm - 2:45pm"},
+                    ],
+                  },
+                  {
+                    "title": "Late Start (Tue)",
+                    "data": [
+                      {"key": "Warning Bell", "value": "9:10am"},
+                      {"key": "First Block", "value": "9:15am - 10:25am"},
+                      {"key": "Second Block", "value": "10:30am - 11:40am"},
+                      {"key": "Lunch Break", "value": "11:40am - 12:15pm"},
+                      {"key": "Third Block", "value": "12:20pm - 1:30pm"},
+                      {"key": "Fourth Block", "value": "1:35pm - 2:45pm"},
+                    ]
+                  },
+                  {
+                    "title": "Early Dismissal",
+                    "data": [
+                      {"key": "Warning Bell", "value": "8:25am"},
+                      {"key": "First Block", "value": "8:30am - 9:35am"},
+                      {"key": "Second Block", "value": "9:40am - 10:45am"},
+                      {"key": "Lunch Break", "value": "10:45am - 11:25pm"},
+                      {"key": "Third Block", "value": "11:30pm - 12:35pm"},
+                      {"key": "Fourth Block", "value": "12:40pm - 1:45pm"},
+                    ]
+                  },
+                  {
+                    "title": "Block Rotation",
+                    "data": [
+                      {"key": "Week 1 & 2", "value": "ABCD/EFGH"},
+                      {"key": "Week 3 & 4", "value": "CDAB/GHEF"},
+                      {"key": "Week 5 & 6", "value": "BADC/FEHG"},
+                      {"key": "Week 7 & 8", "value": "DCBA/HGFE"},
+                    ]
+                  },
+                ].map(
+                  (e) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+                          child: Text(
+                            e["title"] as String,
+                            style: theme.textTheme.titleLarge,
+                          ),
+                        ),
+                        ...(e["data"] as List).map(
+                          (e) {
+                            return Table(
+                              children: [
+                                TableRow(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: theme.dividerColor.withOpacity(0.25),
+                                      ),
+                                    ),
+                                  ),
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+                                      child: Text(e["key"] as String, style: theme.textTheme.bodyLarge),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+                                      child: Text(e["value"] as String, style: theme.textTheme.bodyLarge),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                        SizedBox(height: 16),
+                      ],
+                    );
+                  },
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }
