@@ -92,7 +92,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints viewportConstraints) {
         print(MediaQuery.sizeOf(context).width);

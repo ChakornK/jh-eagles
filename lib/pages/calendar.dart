@@ -58,7 +58,7 @@ class _CalendarPageState extends State<CalendarPage> {
   bool isLoading = true;
 
   Future<List<CalendarEvent>> fetchData() async {
-    final response = await http.get(Uri.parse("https://eagletime.vercel.app/calendar"));
+    final response = await http.get(Uri.parse("https://eagletime.appazur.com/api/a?age=1&ua=1&v=2&dfmt=md"));
 
     isLoading = false;
     if (response.statusCode == 200 && response.body.isNotEmpty) {
