@@ -484,25 +484,25 @@ MaterialPageRoute bellScheduleScreen() {
               children: [
                 ...[
                   {
-                    "title": "Regular (Mon, Wed, Thu, Fri)",
+                    "title": "Regular (Mon, Tue, Thu, Fri)",
                     "data": [
                       {"key": "Warning Bell", "value": "8:25am"},
-                      {"key": "First Block", "value": "8:30am - 9:50am"},
-                      {"key": "Second Block", "value": "9:55am - 11:15am"},
-                      {"key": "Lunch Break", "value": "11:15am - 11:55pm"},
+                      {"key": "First Block", "value": "8:30am - 9:55am"},
+                      {"key": "Second Block", "value": "10:00am - 11:20am"},
+                      {"key": "Lunch Break", "value": "11:20am - 11:55pm"},
                       {"key": "Third Block", "value": "12:00pm - 1:20pm"},
-                      {"key": "Fourth Block", "value": "1:25pm - 2:45pm"},
+                      {"key": "Fourth Block", "value": "1:25pm - 2:48pm"},
                     ],
                   },
                   {
-                    "title": "Late Start (Tue)",
+                    "title": "Late Start (Wed)",
                     "data": [
-                      {"key": "Warning Bell", "value": "9:10am"},
-                      {"key": "First Block", "value": "9:15am - 10:25am"},
-                      {"key": "Second Block", "value": "10:30am - 11:40am"},
-                      {"key": "Lunch Break", "value": "11:40am - 12:15pm"},
-                      {"key": "Third Block", "value": "12:20pm - 1:30pm"},
-                      {"key": "Fourth Block", "value": "1:35pm - 2:45pm"},
+                      {"key": "Warning Bell", "value": "9:15am"},
+                      {"key": "First Block", "value": "9:20am - 10:30am"},
+                      {"key": "Second Block", "value": "10:35am - 11:45am"},
+                      {"key": "Lunch Break", "value": "11:45am - 12:20pm"},
+                      {"key": "Third Block", "value": "12:25pm - 1:35pm"},
+                      {"key": "Fourth Block", "value": "1:40pm - 2:48pm"},
                     ]
                   },
                   {
@@ -513,7 +513,7 @@ MaterialPageRoute bellScheduleScreen() {
                       {"key": "Second Block", "value": "9:40am - 10:45am"},
                       {"key": "Lunch Break", "value": "10:45am - 11:25pm"},
                       {"key": "Third Block", "value": "11:30pm - 12:35pm"},
-                      {"key": "Fourth Block", "value": "12:40pm - 1:45pm"},
+                      {"key": "Fourth Block", "value": "12:40pm - 1:48pm"},
                     ]
                   },
                   {
