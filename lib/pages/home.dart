@@ -9,6 +9,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:weather_icons/weather_icons.dart';
 import 'package:intl/intl.dart';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 class HomeData {
   String blockRotation;
   Map<String, String> weather;
@@ -57,14 +60,22 @@ class _HomePageState extends State<HomePage> {
   Map<String, String> appInfo = {"name": "", "version": "", "buildNumber": ""};
 
   Future<HomeData> fetchData() async {
-    final blockRotation = await http.get(Uri.parse("https://eagletime.vercel.app/block"));
+    final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
+    final prefs = await SharedPreferences.getInstance();
+
     final weather = await http.get(Uri.parse("https://eagletime.vercel.app/weather"));
 
-    var b = "N/A";
-    if (blockRotation.statusCode == 200 && blockRotation.body.isNotEmpty) {
-      var lst = jsonDecode(blockRotation.body) as List;
-      b = lst[0]["name"];
+    var b = "No block rotation";
+    if (connectivityResult.contains(ConnectivityResult.none)) {
+      b = "Block rotation unavailable";
+    } else {
+      final blockRotation = await http.get(Uri.parse("https://eagletime.appazur.com/api/a/block/today"));
+      if (blockRotation.statusCode == 200 && blockRotation.body.isNotEmpty) {
+        await prefs.setString("block_rotation_cache", blockRotation.body);
+        b = (jsonDecode(blockRotation.body) as List)[0]["name"];
+      }
     }
+
     var w = {"condition": "N/A", "icon": "unknown", "temperature": "N/A"};
     if (weather.statusCode == 200 && weather.body.isNotEmpty) {
       var json = jsonDecode(weather.body) as Map<String, dynamic>;
@@ -119,7 +130,7 @@ class _HomePageState extends State<HomePage> {
                               return Column(
                                 children: [
                                   Text(
-                                    (snapshot.data?.blockRotation.toString() ?? "N/A"),
+                                    (snapshot.data?.blockRotation.toString() ?? "No block rotation"),
                                     textScaler: TextScaler.linear(1.75),
                                   ),
                                 ],
@@ -131,38 +142,45 @@ class _HomePageState extends State<HomePage> {
                         FutureBuilder<HomeData>(
                             future: futureData,
                             builder: (context, snapshot) {
-                              if (MediaQuery.sizeOf(context).width > 600) {
-                                return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                                  Icon(
-                                    weatherIcons[snapshot.data?.weather["icon"].toString() ?? "unknown"],
-                                  ),
-                                  Text(
-                                    snapshot.data?.weather["condition"].toString() ?? "N/A",
-                                    textScaler: TextScaler.linear(1.35),
-                                  ),
-                                  Text(
-                                    snapshot.data?.weather["temperature"].toString() ?? "N/A",
-                                    textScaler: TextScaler.linear(1.35),
-                                  ),
-                                ]);
+                              if (!snapshot.hasData) {
+                                return Text(
+                                  "No weather data",
+                                  textScaler: TextScaler.linear(1.35),
+                                );
                               } else {
-                                return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                                  Icon(
-                                    weatherIcons[snapshot.data?.weather["icon"].toString() ?? "unknown"],
-                                  ),
-                                  SizedBox(width: 12),
-                                  Text(
-                                    snapshot.data?.weather["condition"].toString() ?? "N/A",
-                                    textScaler: TextScaler.linear(1.35),
-                                  ),
-                                  SizedBox(width: 6),
-                                  Text("•", textScaler: TextScaler.linear(1.35)),
-                                  SizedBox(width: 6),
-                                  Text(
-                                    snapshot.data?.weather["temperature"].toString() ?? "N/A",
-                                    textScaler: TextScaler.linear(1.35),
-                                  ),
-                                ]);
+                                if (MediaQuery.sizeOf(context).width > 600) {
+                                  return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                    Icon(
+                                      weatherIcons[snapshot.data?.weather["icon"].toString() ?? "unknown"],
+                                    ),
+                                    Text(
+                                      snapshot.data?.weather["condition"].toString() ?? "N/A",
+                                      textScaler: TextScaler.linear(1.35),
+                                    ),
+                                    Text(
+                                      snapshot.data?.weather["temperature"].toString() ?? "N/A",
+                                      textScaler: TextScaler.linear(1.35),
+                                    ),
+                                  ]);
+                                } else {
+                                  return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                    Icon(
+                                      weatherIcons[snapshot.data?.weather["icon"].toString() ?? "unknown"],
+                                    ),
+                                    SizedBox(width: 12),
+                                    Text(
+                                      snapshot.data?.weather["condition"].toString() ?? "N/A",
+                                      textScaler: TextScaler.linear(1.35),
+                                    ),
+                                    SizedBox(width: 6),
+                                    Text("•", textScaler: TextScaler.linear(1.35)),
+                                    SizedBox(width: 6),
+                                    Text(
+                                      snapshot.data?.weather["temperature"].toString() ?? "N/A",
+                                      textScaler: TextScaler.linear(1.35),
+                                    ),
+                                  ]);
+                                }
                               }
                             })
                       ],
