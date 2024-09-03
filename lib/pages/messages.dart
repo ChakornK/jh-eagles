@@ -56,7 +56,7 @@ class _MessagesPageState extends State<MessagesPage> {
   bool isLoading = true;
 
   Future<List<Message>> fetchMessages() async {
-    final response = await http.get(Uri.parse("https://eagletime.vercel.app/messages"));
+    final response = await http.get(Uri.parse("https://eagletime.appazur.com/api/msg?limit=50"));
 
     isLoading = false;
     if (response.statusCode == 200 && response.body.isNotEmpty) {
