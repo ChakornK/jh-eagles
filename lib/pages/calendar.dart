@@ -236,13 +236,19 @@ class _CalendarPageState extends State<CalendarPage> {
                                               context: context,
                                               showDragHandle: true,
                                               builder: (context) {
-                                                return SingleChildScrollView(
-                                                  child: Padding(
-                                                    padding: EdgeInsets.all(16),
-                                                    child: HtmlWidget(
-                                                      e.description,
+                                                return Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: SingleChildScrollView(
+                                                        child: Padding(
+                                                          padding: EdgeInsets.all(16),
+                                                          child: HtmlWidget(
+                                                            e.description,
+                                                          ),
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
+                                                  ],
                                                 );
                                               },
                                             );
