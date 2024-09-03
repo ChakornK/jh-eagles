@@ -7,6 +7,9 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 class Message {
   int sid;
   int timestamp;
@@ -56,13 +59,23 @@ class _MessagesPageState extends State<MessagesPage> {
   bool isLoading = true;
 
   Future<List<Message>> fetchMessages() async {
+    final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
+    final prefs = await SharedPreferences.getInstance();
+    if (connectivityResult.contains(ConnectivityResult.none)) {
+      final cache = prefs.getString("messages_cache");
+      if (cache == null || cache.isEmpty) {
+        return [];
+      }
+      return (jsonDecode(cache) as List).map((d) => Message.fromJson(d)).toList();
+    }
+
     final response = await http.get(Uri.parse("https://eagletime.appazur.com/api/msg?limit=50"));
 
     isLoading = false;
     if (response.statusCode == 200 && response.body.isNotEmpty) {
+      await prefs.setString("messages_cache", response.body);
       // If the call to the server was successful, parse the JSON
-      var lst = jsonDecode(response.body) as List;
-      return lst.map((d) => Message.fromJson(d)).toList();
+      return (jsonDecode(response.body) as List).map((d) => Message.fromJson(d)).toList();
     } else {
       return [];
     }

@@ -6,6 +6,9 @@ import 'package:http/http.dart' as http;
 import 'package:jiffy/jiffy.dart';
 import 'package:intl/intl.dart';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 int lastEventDay = 0;
 int lastEventWeek = 0;
 int lastEventMonth = 0;
@@ -58,13 +61,23 @@ class _CalendarPageState extends State<CalendarPage> {
   bool isLoading = true;
 
   Future<List<CalendarEvent>> fetchData() async {
-    final response = await http.get(Uri.parse("https://eagletime.appazur.com/api/a?age=1&ua=1&v=2&dfmt=md"));
+    final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
+    final prefs = await SharedPreferences.getInstance();
+    if (connectivityResult.contains(ConnectivityResult.none)) {
+      final cache = prefs.getString("calendar_cache");
+      if (cache == null || cache.isEmpty) {
+        return [];
+      }
+      return (jsonDecode(cache) as List).map((d) => CalendarEvent.fromJson(d)).toList();
+    }
+
+    final response = await http.get(Uri.parse("https://eagletime.appazur.com/api/a?age=1&ua=1&v=2&dfmt=html"));
 
     isLoading = false;
     if (response.statusCode == 200 && response.body.isNotEmpty) {
+      await prefs.setString("calendar_cache", response.body);
       // If the call to the server was successful, parse the JSON
-      var lst = jsonDecode(response.body) as List;
-      return lst.map((d) => CalendarEvent.fromJson(d)).toList();
+      return (jsonDecode(response.body) as List).map((d) => CalendarEvent.fromJson(d)).toList();
     } else {
       return [];
     }
