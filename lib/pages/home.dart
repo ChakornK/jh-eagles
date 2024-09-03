@@ -4,6 +4,7 @@ import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:weather_icons/weather_icons.dart';
@@ -63,11 +64,18 @@ class _HomePageState extends State<HomePage> {
     final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
     final prefs = await SharedPreferences.getInstance();
 
-    final weather = await http.get(Uri.parse("https://eagletime.vercel.app/weather"));
-
     var b = "No block rotation";
+    final date = Jiffy.now().format(pattern: "yyyy-MM-dd");
     if (connectivityResult.contains(ConnectivityResult.none)) {
-      b = "Block rotation unavailable";
+      final cache = prefs.getString("block_rotation_cache");
+      final cacheDate = prefs.getString("block_rotation_cache_date");
+      if (cache == null || cache.isEmpty || cacheDate != date) {
+        b = "Block rotation unavailable";
+      } else {
+        b = (jsonDecode(cache) as List)[0]["name"];
+        prefs.setString("block_rotation_cache_date", date);
+        prefs.setString("block_rotation_cache", cache);
+      }
     } else {
       final blockRotation = await http.get(Uri.parse("https://eagletime.appazur.com/api/a/block/today"));
       if (blockRotation.statusCode == 200 && blockRotation.body.isNotEmpty) {
@@ -76,6 +84,7 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
+    final weather = await http.get(Uri.parse("https://eagletime.vercel.app/weather"));
     var w = {"condition": "N/A", "icon": "unknown", "temperature": "N/A"};
     if (weather.statusCode == 200 && weather.body.isNotEmpty) {
       var json = jsonDecode(weather.body) as Map<String, dynamic>;
