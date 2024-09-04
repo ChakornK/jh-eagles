@@ -146,7 +146,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
                     // find the start and end date of the week
                     DateFormat formatter = DateFormat("MMM d");
-                    DateTime startOfWeek = date.subtract(Duration(days: date.weekday - 7));
+                    DateTime startOfWeek = date.subtract(Duration(days: date.weekday));
                     DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
 
                     headerWidgetList.add(
