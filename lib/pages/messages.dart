@@ -122,7 +122,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Builder(builder: (context) {
-                                              String url = e.atts[0]?["url"] ?? "";
+                                              String url = e.atts.isNotEmpty ? (e.atts[0]?["url"] ?? "") : "";
                                               if (e.atts.isNotEmpty && (url.endsWith(".jpg") || url.endsWith(".png"))) {
                                                 return ClipRRect(
                                                   borderRadius: BorderRadius.only(
