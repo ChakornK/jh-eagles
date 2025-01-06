@@ -1,5 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jh_eagles/components/indexedstackslider.dart';
 import 'package:jh_eagles/pages/calendar.dart';
 import 'package:jh_eagles/pages/messages.dart';
@@ -8,6 +9,17 @@ import 'package:provider/provider.dart';
 import 'package:jh_eagles/pages/home.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+    ),
+  );
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [
+    SystemUiOverlay.top,
+  ]);
+
   runApp(MainScreen());
 }
 
@@ -28,6 +40,7 @@ class MainScreen extends StatelessWidget {
             theme: ThemeData(useMaterial3: true, colorScheme: lightDynamic ?? _defaultLightColorScheme, splashFactory: InkSparkle.splashFactory),
             darkTheme: ThemeData(useMaterial3: true, colorScheme: darkDynamic ?? _defaultDarkColorScheme, splashFactory: InkSparkle.splashFactory),
             home: StatefulApp(),
+            debugShowCheckedModeBanner: false,
           ),
         );
       },
