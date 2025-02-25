@@ -26,7 +26,7 @@ class MainActivity : FlutterActivity() {
     View.inflate(this, R.layout.main_activity, rootLayout)
 
     runBlocking {
-      delay(2000)
+      delay(600)
       if (flutterUIReady) {
         hideSplashScreenAnimation()
       } else {
