@@ -199,7 +199,7 @@
                     android:duration="153"
                     android:startOffset="0"
                     android:valueTo="1f" />
-                <objectAnimator android:propertyName="trimPathEnd" android:duration="667"
+                <objectAnimator android:propertyName="trimPathEnd" android:duration="350"
                     android:startOffset="0" android:valueFrom="0" android:valueTo="1"
                     android:valueType="floatType">
                     <aapt:attr name="android:interpolator">
